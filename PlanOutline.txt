@@ -1,0 +1,19 @@
+Four items of incomparable weight are due for Phase II.
+
+1. Design document (PlanOutline.txt)
+   * You are here :)
+
+
+2. Testing plan (TestingPlan.txt)
+
+
+3. Tests (	RunTests.py,
+		TestSuite.py,
+		*other test documents as needed*
+	 )
+
+
+4. The program (CamelliaSolver.py), which is divided as follows:
+   a) the parser
+   b) ??
+
