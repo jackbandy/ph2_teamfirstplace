@@ -3,6 +3,7 @@
 # Accept state after name of file has been entered
 
 from Singleton import *
+import Data
 import #Phase2
 
 @Singleton
@@ -19,5 +20,6 @@ class SaveFile(object):
 		return dict
 
 	def act(self, entry):
+		Data.form.solution().save(entry)
 		#if reject, return null
 		#if accept, return class to go to

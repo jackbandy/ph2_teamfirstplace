@@ -4,6 +4,7 @@
 
 from PyCamellia import *
 from Singleton import *
+import Data
 import HorP
 
 @Singleton
@@ -21,9 +22,9 @@ class Refine(object):
 
 	def act(self, entry):
 		if (entry == "h")
-			#set Data.refineType = h
+			Data.horp = "h"
 		elif (entry == "p")
-			#set Data.refineType = p
+			Data.horp = "p"
 		return null
 		#if reject, return null
 		#if accept, return class to go to

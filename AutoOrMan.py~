@@ -8,6 +8,9 @@ import #Phase2
 
 @Singleton
 class AutoOrMan(object):
+
+	def isAccept(self):
+		return true
 	
 	def prompt(self):
 		return ""
@@ -17,6 +20,49 @@ class AutoOrMan(object):
 		return dict
 
 	def act(self, entry):
+		refinementNumber = 0
+		if (Data.horp = "h")
+			if (Data.aorm = "auto")
+				while energyError > threshold and refinementNumber <= 8:
+  					form.hRefine()
+  					form.solve()
+  					energyError = form.solution().energyErrorTotal()
+  					refinementNumber += 1
+  					elementCount = mesh.numActiveElements()
+  					globalDofCount = mesh.numGlobalDofs()
+  					print("Energy error after %i refinements: %0.3f" % (refinementNumber, energyError))
+  					print("Mesh has %i elements and %i degrees of freedom." % (elementCount, globalDofCount))
+			elif (Data.aorm = "manual")
+				while energyError > threshold and refinementNumber <= 8:
+  					form.hRefine(Data.manualElems)
+  					form.solve()
+  					energyError = form.solution().energyErrorTotal()
+  					refinementNumber += 1
+  					elementCount = mesh.numActiveElements()
+  					globalDofCount = mesh.numGlobalDofs()
+  					print("Energy error after %i refinements: %0.3f" % (refinementNumber, energyError))
+  					print("Mesh has %i elements and %i degrees of freedom." % (elementCount, globalDofCount))
+		elif (Data.horp = "p")
+			if (Data.aorm = "auto")
+				while energyError > threshold and refinementNumber <= 8:
+  					form.pRefine()
+  					form.solve()
+  					energyError = form.solution().energyErrorTotal()
+  					refinementNumber += 1
+  					elementCount = mesh.numActiveElements()
+  					globalDofCount = mesh.numGlobalDofs()
+  					print("Energy error after %i refinements: %0.3f" % (refinementNumber, energyError))
+  					print("Mesh has %i elements and %i degrees of freedom." % (elementCount, globalDofCount))
+			elif (Data.aorm = "manual")
+				while energyError > threshold and refinementNumber <= 8:
+  					form.pRefine(Data.manualElems)
+  					form.solve()
+  					energyError = form.solution().energyErrorTotal()
+  					refinementNumber += 1
+  					elementCount = mesh.numActiveElements()
+  					globalDofCount = mesh.numGlobalDofs()
+  					print("Energy error after %i refinements: %0.3f" % (refinementNumber, energyError))
+  					print("Mesh has %i elements and %i degrees of freedom." % (elementCount, globalDofCount))
 		return null
 		#if reject, return null
 		#if accept, return class to go to

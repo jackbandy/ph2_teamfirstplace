@@ -7,6 +7,9 @@ import #Phase2
 
 @Singleton
 class LoadFile(object):
+
+	def isAccept(self):
+		return true
 	
 	def prompt(self):
 		return "Loading... loaded."
