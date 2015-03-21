@@ -8,6 +8,9 @@ while True:
     input = raw_input(">> ")
     if (input == ("quit")):
         break
-    print (input == re.match(input).group()) and (input != "")
-
+    m = re.match(input)
+    if (m != None):
+        print (input == m.group()) and (input != "")
+    else:
+        print False
     
