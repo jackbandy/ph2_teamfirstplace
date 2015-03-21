@@ -1,5 +1,6 @@
 from Singleton import *
 from PyCamellia import *
+from Data import *
 
 @Singleton
 
@@ -14,6 +15,7 @@ class Phase1(object):
 	def act(self, input):
 		return null
 	
+		
 	def isAccept(self):
 		return False
 
@@ -28,8 +30,9 @@ class Create(object):
 		return {'stokes' : Stokes.Instance(),
 			'navier-stokes' : NavierStokes.Instance()}
 
+	#expected input "stokes" or "navier-stokes"
 	def act(self, input):
-		return null
+		Data.stokesOrNS = input
 	
 	def isAccept(self):
 		return False
@@ -44,7 +47,7 @@ class Stokes(object):
 		return {"\d": Reynolds.Instance()}
 
 	def act(self, input):
-		return null
+		Data.reynolds = input
 	
 	def isAccept(self):
 		return False;
@@ -60,7 +63,7 @@ class NavierStokes(object):
 		return {"\d": Reynolds.Instance()}
 
 	def act(self, input):
-		return null
+		Data.reynolds = input
 	
 	def isAccept(self):
 		return False;
@@ -78,7 +81,9 @@ class Reynolds(object):
 			"steady state": SteadyState.Instance()}
 
 	def act(self, input):
-		return null
+		#input should be "transient" or "steady state"
+		Data.transientOrSS = input;
+
 	
 	def isAccept(self):
 		return False;
@@ -93,7 +98,7 @@ class SteadyState(object):
 		return "This solver handles rectangular meshes with lower-left corner at the origin. \n What are the dimensions of your mesh? (E.g., \"1.0 x 2.0\")"
 	def getDict(self):
 
-		return {"\d(\d)*.\d(\d)*" MeshDim.Instance()}
+		return {"\d+.\d+( )*x( )*\d+.\d+": MeshDim.Instance()}
 
 
 	def act(self, input):
@@ -110,7 +115,27 @@ class Transient(object):
 		return "This solver handles rectangular meshes with lower-left corner at the origin. \n What are the dimensions of your mesh? (E.g., \"1.0 x 2.0\")"
 	def getDict(self):
 
-		return {"\d(\d)*.\d(\d)*" MeshDim.Instance()}
+		return {"\d+.\d+( )*x( )*\d+.\d+": MeshDim.Instance()}
+
+	# expects string input 
+	def act(self, input):
+		#FIX THIS. expects input like "1.0 x 4.0". need to take that apart.
+		Data.xdim = float(input)
+	
+	def isAccept(self):
+		return False;
+
+
+@Singleton
+
+class MeshDim(object):
+
+
+	def prompt(self):
+		return "How many elements in the initial mesh? (E.g. \"3 x 5\")"
+	def getDict(self):
+
+		return {"\d(\d)* x \d(\d)*": MeshElem.Instance()}
 
 
 	def act(self, input):
@@ -118,6 +143,11 @@ class Transient(object):
 	
 	def isAccept(self):
 		return False;
+
+
+
+
+
 
 
 
