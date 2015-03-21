@@ -2,22 +2,6 @@ from Singleton import *
 from PyCamellia import *
 from Data import *
 
-@Singleton
-
-class Phase1(object):
-
-	def prompt(self):
-		return 'You can now: create or load'
-	def getDict(self):
-		return {'load' : Load.Instance(),
-			'create' : Create.Instance()}
-
-	def act(self, input):
-		return null
-	
-		
-	def isAccept(self):
-		return False
 
 @Singleton
 
@@ -175,12 +159,14 @@ class polyOrder(object):
 	def prompt(self):
 		return "How many inflow conditions?"
 	def getDict(self):
-		#Should we accept 0?
-		if 
-		return {"/d+": inflowCond.Instance()}
+		#Should we accept 0? Right now we are.
+		# if it's zero, don't ask for inflow conditions.
+		return {"0": inflowCondVy.Instance(),
+			"/d+": inflowCond.Instance()}
 
 	def act(self, input):
 		inflowCond = float(input)
+		inflowsAskedFor = 0;
 	
 	def isAccept(self):
 		return False;
@@ -189,10 +175,27 @@ class polyOrder(object):
 class inflowCond(object):
 
 	def prompt(self):
-		return "For inflow condition" + Data.inflowsAskedFor + ", what region of space? (E.g. \"x=0.5, y > 3\")"
+		return "For inflow condition " + str(inflowsAskedFor + 1) + ", what region of space? (E.g. \"x=0.5, y > 3\")"
 	def getDict(self):
-		#Should we accept 0?
-		return {"/d+": inflowCondx.Instance()}
+		#figure this out next
+		return {"( )*x( )*=( )*/d+./d+,( )*y( )*": inflowCondSpace.Instance()}
+
+	def act(self, input):
+		inflowCond = 
+	
+	def isAccept(self):
+		return False;
+
+
+@Singleton
+class inflowCondSpace(object):
+
+	def prompt(self):
+		return "For inflow condition " + str(inflowsAskedFor + 1) + ", what is the x component of the velocity?"
+
+	def getDict(self):
+		#parse that bad boy. Fix this later
+		return {"": inflowCond}
 
 	def act(self, input):
 		inflowCond = float(input)
@@ -200,18 +203,23 @@ class inflowCond(object):
 	def isAccept(self):
 		return False;
 
-
 @Singleton
-class inflowCondX(object):
-	
+class inflowCondVx(object):
+
 	def prompt(self):
-		return "How many inflow conditions?"
+		return "For inflow condition " + str(inflowsAskedFor + 1) + ", what is the y component of the velocity?"
 	def getDict(self):
-		#Should we accept 0?
-		return {"/d+": inflowCondx.Instance()}
+		#if there's no more to be asked for
+		if inflowsAskedFor == inflowCond - 1:
+			return {"": inflowCondVy.Instance()}
+		else
+			return {"": inflowCond.Instance()}
+			
+		
 
 	def act(self, input):
-		polyOrder = float(input)
+		inflowsAskedFor = inflowsAskedFor + 1
+		inflowCond = float(input)
 	
 	def isAccept(self):
 		return False;
@@ -221,7 +229,20 @@ class inflowCondX(object):
 
 
 
-#{"": Phase2.Instance()} is dictionary for any accept state
+
+
+
+
+#This will be the state after all inflow conditions are entered
+@Singleton
+class inflowCondVy(object):
+
+	
+
+
+
+
+#{"": Phase2.Phase2.Instance()} is dictionary for any accept state
 
 
 
