@@ -4,7 +4,7 @@
 
 from Singleton import *
 import Data
-import #Phase2
+import Phase2
 
 @Singleton
 class LoadFile(object):
@@ -16,7 +16,7 @@ class LoadFile(object):
 		return "Loading... loaded."
 
 	def getDict(self):
-		dict = {"": #Phase2.Phase2.Instance()}
+		dict = {"": Phase2.Phase2.Instance()}
 		return dict
 
 	def act(self, entry):

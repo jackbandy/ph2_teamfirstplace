@@ -4,7 +4,7 @@
 
 from PyCamellia import *
 from Singleton import *
-import #Phase2
+import Phase2
 
 @Singleton
 class AutoOrMan(object):
@@ -16,7 +16,7 @@ class AutoOrMan(object):
 		return ""
 
 	def getDict(self):
-		dict = {"": #Phase2.Phase2.Instance()}
+		dict = {"": Phase2.Phase2.Instance()}
 		return dict
 
 	def act(self, entry):
@@ -39,7 +39,7 @@ class AutoOrMan(object):
   					energyError = Data.form.solution().energyErrorTotal()
   					refinementNumber += 1
   					elementCount = Data.mesh.numActiveElements()
-  					globalDofCount = mesh.numGlobalDofs()
+  					globalDofCount = Data.mesh.numGlobalDofs()
   					print("Energy error after %i refinements: %0.3f" % (refinementNumber, energyError))
   					print("Mesh has %i elements and %i degrees of freedom." % (elementCount, globalDofCount))
 		elif (Data.horp = "p")

@@ -15,7 +15,7 @@ class Save(object):
 		return "What would you like to call the solution and mesh files?"
 
 	def getDict(self):
-		dict = {"%": SaveFile.SaveFile.Instance()}
+		dict = {"\w*": SaveFile.SaveFile.Instance()}
 		return dict
 
 	def act(self, entry):
