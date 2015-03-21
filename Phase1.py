@@ -1,4 +1,5 @@
 from Singleton import *
+import Exit
 
 @Singleton
 class Phase1(object):
@@ -7,7 +8,8 @@ class Phase1(object):
         return "Yo options now iz: create or load."
         
     def getDict(self):
-        return { "phase1": Phase1.Instance() }
+        return { "phase1": Phase1.Instance(),
+                 "exit": Exit.Exit.Instance() }
 
     def act(self, input):
         return
