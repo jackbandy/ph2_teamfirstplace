@@ -24,8 +24,6 @@ def processInput(state, input):
                 if (curr == ret.group()) and (curr != ""): #curr was accepted as a key
                     state.act(curr)
                     state = dict[key] #exit Key Loop
-                    if state == Exit.Exit.Instance():
-                        return state
                     i += 1
                     if i < len(parsed) and not state.isAccept():  #There is more input left
                         newInput = ""
@@ -46,7 +44,7 @@ def processInput(state, input):
 
 print "Yo thug, you playin' PyCamellia incompressible flow solva!"
 
-state = Phase1.Phase1.Instance()
+state = PhaseStates.Phase1.Instance()
 
 while True:
     print state.prompt()
