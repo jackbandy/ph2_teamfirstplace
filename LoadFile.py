@@ -3,7 +3,8 @@
 # Accept state after name of file has been entered
 
 from Singleton import *
-import #Phase2
+import Data
+import Phase2
 
 @Singleton
 class LoadFile(object):
@@ -15,10 +16,12 @@ class LoadFile(object):
 		return "Loading... loaded."
 
 	def getDict(self):
-		dict = {"": #Phase2.Phase2.Instance()}
+		dict = {"": Phase2.Phase2.Instance()}
 		return dict
 
 	def act(self, entry):
+		#Need BF to be restored
+		loadedSolution = Data.Solution.load(form.bf(), meshAndSolutionPrefixString)
 		#if reject, return null
 		#if accept, return class to go to
 

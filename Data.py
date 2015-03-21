@@ -2,8 +2,14 @@ from Singleton import *
 import Queue
 from PyCamellia import *
 
-@singleton
+@Singleton
 class Data(object):
+	#Initialization of form
+	spaceDim = 2
+	useConformingTraces = True
+	mu = 1.0
+	form = StokesVGPFormulation(spaceDim,useConformingTraces,mu)
+
 	createOrLoad = ''
 	stokesOrNS = ''
 	reynolds = ''
@@ -27,6 +33,12 @@ class Data(object):
 	wallCond = -1
 	wallRegion = Queue.Queue()
 	mesh = ''
+	solution = ''
+
+	#For Refinement
+	horp = ''
+	aorm = ''
+	manualElems = ''
 	
 	
 	

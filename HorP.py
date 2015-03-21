@@ -5,7 +5,7 @@
 from PyCamellia import *
 from Singleton import *
 import AutoOrMan
-import re
+import Data
 
 @Singleton
 class HorP(object):
@@ -18,10 +18,17 @@ class HorP(object):
 		return "Which elements? You can specify active element numbers 0,1,2,5,8,9,10,... or auto."
 
 	def getDict(self):
-		dict = {"auto": AutoOrMan.AutoOrMan.Instance(), "%": AutoOrMan.AutoOrMan.Instance()}
+		dict = {"auto": AutoOrMan.AutoOrMan.Instance(), "(\d+,)*\d+": AutoOrMan.AutoOrMan.Instance()}
 		return dict
 
 	def act(self, entry):
+		if (entry == "auto")
+			Data.aorm = "auto"
+		else
+			manNums = entry.split(",")
+			manNums = [int(i) for i in manNums]
+			Data.aorm = "manual"
+			Data.manualElems = manNums
 		return null
 		#if reject, return null
 		#if accept, return class to go to
