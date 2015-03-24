@@ -1,8 +1,6 @@
-from Singleton import *
 import Queue
 from PyCamellia import *
 
-@Singleton
 class Data(object):
 	#Initialization of form
 	spaceDim = 2
