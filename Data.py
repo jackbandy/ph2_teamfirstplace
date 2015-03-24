@@ -42,6 +42,16 @@ class Data(object):
 	#For communication between states.
 	inflowsAskedFor = -1; #number of inflow conditions asked for and stored so far
 	outflowsAskedFor = -1
+	wallsAskedFor = -1
 	
 	
+#Exception to be raised if there's an error when parsing
+class ParseException(Exception):
+	def__init__(self):
+		return
+
+
+
+
+
 	
