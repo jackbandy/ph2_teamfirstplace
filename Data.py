@@ -1,8 +1,6 @@
-from Singleton import *
 import Queue
 from PyCamellia import *
 
-@Singleton
 class Data(object):
 	#Initialization of form
 	spaceDim = 2
@@ -11,9 +9,9 @@ class Data(object):
 	form = StokesVGPFormulation(spaceDim,useConformingTraces,mu)
 
 	createOrLoad = ''
-	stokesOrNS = ''
-	reynolds = ''
-	transientOrSS = ''
+	stokesOrNS = '' # "stokes" or "navier-stokes"
+	reynolds = '' #assigned a double value
+	transientOrSS = '' #will be assigned value "transient" or "steady state"
 	xdim = -1
 	ydim = -1
 	xelem = -1
@@ -39,6 +37,21 @@ class Data(object):
 	horp = ''
 	aorm = ''
 	manualElems = ''
+
+
+	#For communication between states.
+	inflowsAskedFor = -1; #number of inflow conditions asked for and stored so far
+	outflowsAskedFor = -1
+	wallsAskedFor = -1
 	
 	
+#Exception to be raised if there's an error when parsing
+class ParseException(Exception):
+	def__init__(self):
+		return
+
+
+
+
+
 	
