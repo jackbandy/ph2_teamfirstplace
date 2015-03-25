@@ -29,24 +29,3 @@ class Plot:
     def isAccept(self):
         return True
 
-
-    def plotu1():
-      pass
-      varu1 = sol.u(1);
-
-    def plotu2():
-      pass
-      varu2 = sol.u(2);
-
-    def plotp():
-      pass
-      varp = sol.p();
-
-    def plotstream():
-      pass
-
-    def plotmesh():
-      pass
-
-    def ploterror():
-      pass

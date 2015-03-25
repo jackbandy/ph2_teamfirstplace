@@ -15,20 +15,25 @@ sol = form.solution();
 loaded = Solution.load(form.bf(), "sample")
 
 
-class Plot:
+class PromptPlot:
     def prompt(self):
-        return "Yo options to plot now iz: u1, u2, p, stream, mesh, error"
+        return "Yo options fo plottin now iz: u1, u2, p, stream, mesh, error"
 
     def getDict(self):
-        return { "u1": Phase1.Instance(),
-		 "u2": Phase1.Instance(),
-		 "p": Phase1.Instance(),
-		 "stream": Phase1.Instance(),
-		 "mesh": Phase1.Instance(),
-		 "error": Phase1.Instance() }
+        return 	{ "u1": Plotted.Instance(),
+		  "u2": Plotted.Instance(),
+		  "p": Plotted.Instance(),
+		  "stream": Plotted.Instance(),
+		  "mesh": Plotted.Instance(),
+		  "error": Plotted.Instance()
+		}
 
 
     def act(self, input):
+	#set the plotType so Plotted.py knows what to plot
+	Data.plotType = input
+	# if input is "u1"
+
         return
 
     def isAccept(self):
@@ -36,8 +41,26 @@ class Plot:
 
 
     def plotu1():
-      pass
+      spaceDim = 2
+      useConformingTraces = True
+      mu = 1.0
+      form = StokesVGPFormulation(spaceDim,useConformingTraces,mu)
+
+      sol = form.solution();
+      loaded = Solution.load(form.bf(), "sample")
+
       varu1 = sol.u(1);
+      u1_soln = Function.solution(form.u(1),form.solution())
+
+      refCellVertexPoints = [[-1.,-1.],[1.,-1.],[1.,1.],[-1.,1.]];
+      mymesh = u1_soln.mesh()
+      activeCellIDs = mymesh.getActiveCellIDs()
+      for cellID in activeCellIDs:
+        (values,points) = u1_soln.getCellValues(mesh,cellID,refCellVertexPoints)
+        print("CellID %i:" % cellID)
+        print(values)
+        print(points)
+
 
     def plotu2():
       pass
