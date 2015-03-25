@@ -32,6 +32,32 @@ class MinusEvaluator(object):
   def evaluateUnary(self, rightOperand):
     return -float(rightOperand)
 
+class Value(object):
+  #String input
+  def __init__(self, value):
+    if isFloat(value):
+      self.state = NumberState.Instance()
+    else:
+      self.state = VariableState.Instance()
+    self.value = value
+  def isFloat(stringToken):
+    try:
+        float(stringToken)
+        return True
+    except ValueError:
+        return False
+
+
+@Singleton
+class NumberState(object):
+  def evaluate(self):
+    print("hi")
+
+@Singleton
+class VariableState(object):
+    def evaluate(self):
+      print("hi")
+
 class InteriorExpressionParser(object):
   # set up class-level rules for operator precedence and association of operators with
   # evaluation classes
