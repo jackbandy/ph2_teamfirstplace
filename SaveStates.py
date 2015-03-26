@@ -5,6 +5,8 @@
 from Singleton import *
 import Data
 import PhaseStates
+import pickle
+import Memento
 
 @Singleton
 class Save(object):
@@ -20,7 +22,7 @@ class Save(object):
 		return dict
 
 	def act(self, entry):
-		return null
+		#Does nothing
 
 
 
@@ -39,3 +41,8 @@ class SaveFile(object):
 
 	def act(self, entry):
 		Data.form.solution().save(entry)
+		savedData = Memento.Memento().setMemento()
+		file = open(entry, 'wb')
+		pickle.dump(savedData, file)
+		file.close()
+		

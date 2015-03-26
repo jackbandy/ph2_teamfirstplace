@@ -5,6 +5,8 @@
 from Singleton import *
 import Data
 import PhaseStates
+import Memento
+import pickle
 
 @Singleton
 class Load(object):
@@ -20,7 +22,7 @@ class Load(object):
 		return dict
 
 	def act(self, entry):
-		return null
+		#Does nothing
 
 
 
@@ -40,3 +42,9 @@ class LoadFile(object):
 	def act(self, entry):
 		#Need BF to be restored
 		loadedSolution = Data.Solution.load(form.bf(), meshAndSolutionPrefixString)
+		file = open(entry, 'rb')
+		dataToLoad = pickle.load(file)
+		file.close()
+		Memento.Memento().loadMemento(dataToLoad)
+
+

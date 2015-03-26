@@ -1,5 +1,5 @@
-import Queue
 from PyCamellia import *
+import collections
 
 class Data(object):
 	#Initialization of form
@@ -19,17 +19,17 @@ class Data(object):
 	polyOrder = -1
 	inflowCond = -1
 	#Queue to hold each inflow Region
-	#inflowRegion.put(something) or
-	#inflowRegion.get() 
-	inflowRegion = Queue.Queue()
-	inflowXVelocity = Queue.Queue()
-	inflowYVelocity = Queue.Queue()
+	#inflowRegion.append(something) or
+	#inflowRegion.popleft() 
+	inflowRegion = collections.deque()
+	inflowXVelocity = collections.deque()
+	inflowYVelocity = collections.deque()
 	outflowCond = -1
-	outflowRegion = Queue.Queue()
-	outflowXVelocity = Queue.Queue()
-	outflowYVelocity = Queue.Queue()
+	outflowRegion = collections.deque()
+	outflowXVelocity = collections.deque()
+	outflowYVelocity = collections.deque()
 	wallCond = -1
-	wallRegion = Queue.Queue()
+	wallRegion = collections.deque()
 	mesh = ''
 	solution = ''
 
