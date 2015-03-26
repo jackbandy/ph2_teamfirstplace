@@ -1,7 +1,7 @@
 from Singleton import *
-
 import re # regular expressions
 import atexit # allows graceful quit on Ctrl-D
+from PyCamellia import *
 
 @Singleton
 class ExponentEvaluator(object):
@@ -32,6 +32,10 @@ class MinusEvaluator(object):
   def evaluateUnary(self, rightOperand):
     return -float(rightOperand)
 
+# x2 = Function.xn(2) x^2
+# c = Function.constant(4)
+
+# x^4 + yx^2
 class Value(object):
   #String input
   def __init__(self, value):
