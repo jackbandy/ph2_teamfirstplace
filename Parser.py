@@ -1,11 +1,14 @@
 from Singleton import *
-
 import re # regular expressions
 import atexit # allows graceful quit on Ctrl-D
+from PyCamellia import *
+
+#we will never evaluate things without them being functions in Camellia
 
 @Singleton
 class ExponentEvaluator(object):
   def evaluate(self, leftOperand, rightOperand):
+    return float(leftOperand)**float(rightOperand)
     
 @Singleton
 class TimesEvaluator(object):
@@ -14,9 +17,8 @@ class TimesEvaluator(object):
 
 @Singleton
 class DivideEvaluator(object):
-	def evaluate(self, leftOperand, rightOperand):
-		return float(leftOperand)/float(rightOperand)
-
+  def evaluate(self, leftOperand, rightOperand):
+    return float(leftOperand)/float(rightOperand)
 
 @Singleton
 class PlusEvaluator(object):
@@ -32,18 +34,45 @@ class MinusEvaluator(object):
   def evaluateUnary(self, rightOperand):
     return -float(rightOperand)
 
+# x2 = Function.xn(2) x^2
+# c = Function.constant(4)
+
+class Value(object):
+  #String input
+  def __init__(self, value):
+    if isFloat(value):
+      self.state = NumberState.Instance()
+    else:
+      self.state = VariableState.Instance()
+    self.value = value
+  def isFloat(stringToken):
+    try:
+        float(stringToken)
+        return True
+    except ValueError:
+        return False
+
+
+@Singleton
+class NumberState(object):
+  def evaluate(self):
+    print("hi")
+
+@Singleton
+class VariableState(object):
+    def evaluate(self):
+      print("hi")
+
 class InteriorExpressionParser(object):
   # set up class-level rules for operator precedence and association of operators with
   # evaluation classes
-  operatorPrecedence = ['^','*','/','+','-']
+  operatorPrecedence = ['^','*','/','+','+-','-']
   operatorEvaluators = {'^' : ExponentEvaluator.Instance(),
                         '*' : TimesEvaluator.Instance(),
 			'/' : DivideEvaluator.Instance(),
                         '+' : PlusEvaluator.Instance(),
+			'+-' : MinusEvaluator.Instance(),
                         '-' : MinusEvaluator.Instance()}
-
-
-
   @staticmethod
   def isFloat(stringToken):
     try:
@@ -55,9 +84,9 @@ class InteriorExpressionParser(object):
   def parseString(interiorString):
     # the definition of an interiorString is one that has no parentheses in it
     # first, convert the string into a list of numbers and characters that correspond to our operators
-
-#PUT AN RE HERE THAT INCLUDES DECIMALS. something like (\d+)|.(\d+)|...
-    tokenList = re.split('(\d+)',interiorString)
+    interiorString = "".join(interiorString.split())
+    interiorString = interiorString.lower()
+    tokenList = re.split('([0-9]*\.[0-9]+|[0-9]+|x|y)',interiorString)
     # drop the first and last (empty string) values from the list:
     tokenList = tokenList[1:-1]
     for op in InteriorExpressionParser.operatorPrecedence:
@@ -68,18 +97,6 @@ class InteriorExpressionParser(object):
         if token == op:
           rightOperand = tokenList.pop(0) # next entry; should be a number
           # apply op to left and right operands
-          if len(reducedTokenList) > 0 and InteriorExpressionParser.isFloat(reducedTokenList[-1]):
-            leftOperand = reducedTokenList.pop() # last entry in reducedTokenList is our left operand
-            #print("evaluating op " + op + " on (" + str(leftOperand) + ", " + str(rightOperand) + ")")
-            value = opEvaluator.evaluate(leftOperand,rightOperand)
-          else:
-            value = opEvaluator.evaluateUnary(rightOperand)
-          reducedTokenList.append(value)
-	#This else if block inserted to allow for users to add negatives
-	elif token == '+-' and op == '+':
-	  tempEval = InteriorExpressionParser.operatorEvaluators['-']
-	  rightOperand = tempEval.evaluateUnary(tokenList.pop(0))
-	  # apply op to left and right operands
           if len(reducedTokenList) > 0 and InteriorExpressionParser.isFloat(reducedTokenList[-1]):
             leftOperand = reducedTokenList.pop() # last entry in reducedTokenList is our left operand
             #print("evaluating op " + op + " on (" + str(leftOperand) + ", " + str(rightOperand) + ")")
@@ -162,11 +179,54 @@ class StateMachine(object):
     self.interiorStringStack = ['']
     self.state = TopLevelState.Instance()
   def readString(self, inputString):
-      for char in inputString:
-        self.readChar(char)
-  def readChar(self, char):
+      # we will delete these lines
+      theInputString = inputString
+      for char in theInputString:
+        self.readElement(char)
+
+
+
+      # First make everything in the string into a functionPtr
+      inputString = inputString.lower()
+      inputString = "".join(inputString.split())
+      inputString = re.split('([0-9]*\.[0-9]+|[0-9]+|[a-z]+)',inputString)
+      #remove blank elements
+      inputString = [i for i in inputString if i != '']
+      reNum = re.compile('([0-9]*\.[0-9]+|[0-9]+)')
+      reVar = re.compile('[a-z]+')
+      j = 0
+      vals = ["x", "y"]
+      for i in range(0, len(inputString)):
+        reNumMatch = reNum.match(inputString[i])
+        reVarMatch = reVar.match(inputString[i])
+        #if the inputString[i] is a number
+        if (reNumMatch != None and inputString[i] == reNumMatch.group()):
+          inputString[i] = Function.constant(float(inputString[i]))
+        #if inputString[i] is a variable
+        elif (reVarMatch != None and inputString[i] == reVarMatch.group()):
+          if keys[0] == inputString[i]:
+            inputString[i] = Function.xn(1)
+          elif keys[1] == inputString[i]:
+            inputString[i] = Function.yn(1)
+          elif (j>len(vals)):
+            raise VariablesError('')
+          elif j==0:
+            keys[j] = inputString[i]
+	    j=j+1
+            inputString[i] = Function.xn(1)
+          elif j==1:
+            keys[j] = inputString[i]
+	    j=j+1
+            inputString[i] = Function.yn(1)
+
+# we will add these lines
+
+#      for i in range(0, len(inputString))
+#        self.readElement(inputString[i])  
+
+  def readElement(self, element):
     try:
-      self.state = self.state.readChar(self.stack, self.interiorStringStack, char)
+      self.state = self.state.readChar(self.stack, self.interiorStringStack, element)
     except:
       #print("Rejecting due to exception caught in StateMachine.")
       self.state = RejectState.Instance()
@@ -187,17 +247,15 @@ def quitGracefully():
 
 atexit.register(quitGracefully)
 
-
-#Expects an input string as entered by user but with no whitespace
 @Singleton
-class Parser(object, inputString):
+class Parser(object):
 
-    if (inputString != "quit"):
-      stateMachine = StateMachine()
-      try:
-        stateMachine.readString(inputString)
-        value = stateMachine.value()
-        print(value)
-      except:
-        print("Syntax error: could not parse string.")
+  def parse(self, inputString):
+    stateMachine = StateMachine()
+    try:
+      stateMachine.readString(inputString)
+      value = stateMachine.value()
+      return value
+    except:
+      print("Syntax error: could not parse string.")
         #raise #Uncomment this to see what exception was thrown
