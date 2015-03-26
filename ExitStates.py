@@ -9,10 +9,11 @@ class Exit(object):
 		return True
 	
 	def prompt(self):
-		return "Exiting... exited."
+		return ""
 
 	def getDict(self):
 		return null
 
 	def act(self, entry):
+		print "Exiting... exited."
 		exit(0)

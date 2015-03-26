@@ -23,6 +23,7 @@ class Save(object):
 
 	def act(self, entry):
 		Data.Data.saveFileName = entry
+		print ("Saving to " + entry)
 
 
 @Singleton
@@ -32,7 +33,7 @@ class SaveFile(object):
 		return true
 	
 	def prompt(self):
-		return "Saving... saved."
+		return ""
 
 	def getDict(self):
 		dict = {"": PhaseStates.Phase2.Instance()}
@@ -44,4 +45,5 @@ class SaveFile(object):
 		file = open(Data.Data.saveFileName, 'wb')
 		pickle.dump(savedData, file)
 		file.close()
+		print("...saved."
 		

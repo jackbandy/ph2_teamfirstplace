@@ -23,6 +23,7 @@ class Load(object):
 
 	def act(self, entry):
 		Data.Data.loadFileName = entry
+		print("Loading saved solution...")
 
 
 @Singleton
@@ -32,7 +33,7 @@ class LoadFile(object):
 		return true
 	
 	def prompt(self):
-		return "Loading... loaded."
+		return ""
 
 	def getDict(self):
 		dict = {"": PhaseStates.Phase2.Instance()}
@@ -48,6 +49,7 @@ class LoadFile(object):
 			Data.Data.form.initializeSolution(Data.Data.loadFileName, Data.Data.polyOrder, Data.Data.delta_k)
 		elif(Data.Data.stokesOrNS == "navier-stokes"):
 			Data.Data.form = NavierStokesVGPFormulation(Data.Data.loadFileName, Data.Data.spaceDim, Data.Data.reynolds, Data.Data.polyOrder, Data.Data.delta_k)
+		print("loaded.")
 
 
 
