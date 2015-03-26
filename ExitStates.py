@@ -5,7 +5,6 @@ from Singleton import *
 
 @Singleton
 class Exit(object):
-
 	def isAccept(self):
 		return True
 	

@@ -22,8 +22,7 @@ class Load(object):
 		return dict
 
 	def act(self, entry):
-		#Does nothing
-
+		Data.Data.loadFileName = entry
 
 
 @Singleton
@@ -40,11 +39,17 @@ class LoadFile(object):
 		return dict
 
 	def act(self, entry):
-		#Need BF to be restored
-		loadedSolution = Data.Solution.load(form.bf(), meshAndSolutionPrefixString)
-		file = open(entry, 'rb')
+		file = open(Data.Data.loadFileName, 'rb')
 		dataToLoad = pickle.load(file)
 		file.close()
 		Memento.Memento().loadMemento(dataToLoad)
+		if (Data.Data.stokesOrNS == "stokes"):
+			Data.Data.form = StokesVGPFormulation(Data.Data.spaceDim, Data.Data.useConformingTraces, Data.Data.mu)
+			Data.Data.form.initializeSolution(Data.Data.loadFileName, Data.Data.polyOrder, Data.Data.delta_k)
+		elif(Data.Data.stokesOrNS == "navier-stokes"):
+			Data.Data.form = NavierStokesVGPFormulation(Data.Data.loadFileName, Data.Data.spaceDim, Data.Data.reynolds, Data.Data.polyOrder, Data.Data.delta_k)
+
+
+
 
 

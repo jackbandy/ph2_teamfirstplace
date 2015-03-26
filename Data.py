@@ -7,6 +7,7 @@ class Data(object):
 	useConformingTraces = True
 	mu = 1.0
 	form = StokesVGPFormulation(spaceDim,useConformingTraces,mu)
+	delta_k = 1
 
 	createOrLoad = ''
 	stokesOrNS = '' # "stokes" or "navier-stokes"
@@ -38,16 +39,19 @@ class Data(object):
 	aorm = ''
 	manualElems = ''
 
-
 	#For communication between states.
 	inflowsAskedFor = -1; #number of inflow conditions asked for and stored so far
 	outflowsAskedFor = -1
 	wallsAskedFor = -1
+
+	#For save and load file names
+	saveFileName = ''
+	loadFileName = ''
 	
 	
 #Exception to be raised if there's an error when parsing
 class ParseException(Exception):
-	def__init__(self):
+	def __init__(self):
 		return
 
 

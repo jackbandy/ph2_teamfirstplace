@@ -21,11 +21,10 @@ class Refine(object):
 		return dict
 
 	def act(self, entry):
-		if (entry == "h")
+		if (entry == "h"):
 			Data.horp = "h"
-		elif (entry == "p")
+		elif (entry == "p"):
 			Data.horp = "p"
-		return null
 
 
 
@@ -43,14 +42,13 @@ class HorP(object):
 		return dict
 
 	def act(self, entry):
-		if (entry == "auto")
+		if (entry == "auto"):
 			Data.aorm = "auto"
-		else
+		else:
 			manNums = entry.split(",")
 			manNums = [int(i) for i in manNums]
 			Data.aorm = "manual"
 			Data.manualElems = manNums
-		return null
 
 
 
@@ -70,8 +68,8 @@ class AutoOrMan(object):
 
 	def act(self, entry):
 		refinementNumber = 0
-		if (Data.horp = "h")
-			if (Data.aorm = "auto")
+		if (Data.horp == "h"):
+			if (Data.aorm == "auto"):
 				while energyError > threshold and refinementNumber <= 8:
   					Data.form.hRefine()
   					Data.form.solve()
@@ -81,7 +79,7 @@ class AutoOrMan(object):
   					globalDofCount = Data.mesh.numGlobalDofs()
   					print("Energy error after %i refinements: %0.3f" % (refinementNumber, energyError))
   					print("Mesh has %i elements and %i degrees of freedom." % (elementCount, globalDofCount))
-			elif (Data.aorm = "manual")
+			elif (Data.aorm == "manual"):
 				while energyError > threshold and refinementNumber <= 8:
   					Data.form.hRefine(Data.manualElems)
   					Data.form.solve()
@@ -91,8 +89,8 @@ class AutoOrMan(object):
   					globalDofCount = Data.mesh.numGlobalDofs()
   					print("Energy error after %i refinements: %0.3f" % (refinementNumber, energyError))
   					print("Mesh has %i elements and %i degrees of freedom." % (elementCount, globalDofCount))
-		elif (Data.horp = "p")
-			if (Data.aorm = "auto")
+		elif (Data.horp == "p"):
+			if (Data.aorm == "auto"):
 				while energyError > threshold and refinementNumber <= 8:
   					Data.form.pRefine()
   					Data.form.solve()
@@ -102,7 +100,7 @@ class AutoOrMan(object):
   					globalDofCount = Data.mesh.numGlobalDofs()
   					print("Energy error after %i refinements: %0.3f" % (refinementNumber, energyError))
   					print("Mesh has %i elements and %i degrees of freedom." % (elementCount, globalDofCount))
-			elif (Data.aorm = "manual")
+			elif (Data.aorm == "manual"):
 				while energyError > threshold and refinementNumber <= 8:
   					Data.form.pRefine(Data.manualElems)
   					Data.form.solve()
@@ -112,4 +110,6 @@ class AutoOrMan(object):
   					globalDofCount = Data.mesh.numGlobalDofs()
   					print("Energy error after %i refinements: %0.3f" % (refinementNumber, energyError))
   					print("Mesh has %i elements and %i degrees of freedom." % (elementCount, globalDofCount))
-		return null
+
+
+

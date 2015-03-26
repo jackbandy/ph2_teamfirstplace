@@ -22,8 +22,7 @@ class Save(object):
 		return dict
 
 	def act(self, entry):
-		#Does nothing
-
+		Data.Data.saveFileName = entry
 
 
 @Singleton
@@ -40,9 +39,9 @@ class SaveFile(object):
 		return dict
 
 	def act(self, entry):
-		Data.form.solution().save(entry)
+		Data.form.solution().save(Data.Data.saveFileName)
 		savedData = Memento.Memento().setMemento()
-		file = open(entry, 'wb')
+		file = open(Data.Data.saveFileName, 'wb')
 		pickle.dump(savedData, file)
 		file.close()
 		
