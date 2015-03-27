@@ -8,6 +8,16 @@ Four items of incomparable weight are due for Phase II.
 2. Testing plan:
    a) TestingPlan.txt
    b) outline.jpg
+   c) Refine
+	1)create a mesh and a solution (can use TestData.py to set Data.py)
+	2)make refinements to those
+	3)solve again
+	4)compare results with what they should be with the refinement
+   d)Save and Load (I don't know how to do these separately)
+	1)create a mesh and a solution (can use TestData.py to set Data.py)
+	2)save them
+	3)make changes to the mesh and solution or make a new one
+	4)load the first mesh and solution and make sure they match the first (Can also compare data in Data.py)
 
 
 3. Tests:
