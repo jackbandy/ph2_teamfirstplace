@@ -7,7 +7,7 @@ import ExitStates
 #import SaveStates
 #import RefineStates
 #import PlotStates
-#import LoadStates
+import LoadStates
 #import CreateStates
 
 
@@ -33,7 +33,7 @@ class Phase1(object):
 class Phase2(object):
 
     def prompt(self):
-        return "Yo options now iz: create, load, save, refine, plot, or exit."
+        return "Your options now are: create, load, save, refine, plot, or exit."
         
     def getDict(self):
         return { #"create" : CreateStates.Create.Instance(), 

@@ -23,6 +23,7 @@ def processInput(state, input):
             if (ret != None):
                 if (curr == ret.group()) and (curr != ""): #curr was accepted as a key
                     state.act(curr)
+                    print key
                     state = dict[key] #exit Key Loop
                     i += 1
                     if i < len(parsed) and not state.isAccept():  #There is more input left
