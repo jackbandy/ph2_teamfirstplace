@@ -37,31 +37,15 @@ class MinusEvaluator(object):
 # x2 = Function.xn(2) x^2
 # c = Function.constant(4)
 
-class Value(object):
-  #String input
-  def __init__(self, value):
-    if isFloat(value):
-      self.state = NumberState.Instance()
-    else:
-      self.state = VariableState.Instance()
-    self.value = value
-  def isFloat(stringToken):
-    try:
-        float(stringToken)
-        return True
-    except ValueError:
-        return False
+class StringRepresentation(object):
+  def __init__(self):
+    a = 1
+    self.rep = []
+  def append(self, argument):
+    (self.rep).append(argument)
+  def pop(self, index):
+    return (self.rep).pop(index)
 
-
-@Singleton
-class NumberState(object):
-  def evaluate(self):
-    print("hi")
-
-@Singleton
-class VariableState(object):
-    def evaluate(self):
-      print("hi")
 
 class InteriorExpressionParser(object):
   # set up class-level rules for operator precedence and association of operators with
@@ -80,13 +64,15 @@ class InteriorExpressionParser(object):
         return True
     except ValueError:
         return False
+
+#must return a StringRepresentation
   @staticmethod
-  def parseString(interiorString):
-    # the definition of an interiorString is one that has no parentheses in it
+  def parseString(interiorStringRep):
+    # the definition of an interiorStringRep is one that has no parentheses in it
     # first, convert the string into a list of numbers and characters that correspond to our operators
-    interiorString = "".join(interiorString.split())
-    interiorString = interiorString.lower()
-    tokenList = re.split('([0-9]*\.[0-9]+|[0-9]+|x|y)',interiorString)
+    interiorStringRep = "".join(interiorStringRep.split())
+    interiorStringRep = interiorStringRep.lower()
+    tokenList = re.split('([0-9]*\.[0-9]+|[0-9]+|x|y)',interiorStringRep)
     # drop the first and last (empty string) values from the list:
     tokenList = tokenList[1:-1]
     for op in InteriorExpressionParser.operatorPrecedence:
@@ -117,41 +103,41 @@ class InteriorExpressionParser(object):
 # Only enter Middle state if we have some ('s on the stack.
 @Singleton
 class TopLevelState(object):
-  def readChar(self, parenStack, interiorStringStack, char):
+  def readChar(self, parenStack, interiorStringRepRepStack, char):
     if char == '(':
       # add to the stack
       parenStack.append('(')
-      interiorStringStack.append('')
+      interiorStringRepRepStack.append(interiorStringRepRepresentation())
       return MiddleState.Instance()
     elif char == ')':
       # from Accept state, getting a close paren means Reject
       return RejectState.Instance()
     else:
-      # for any other character, stay in the current level; append to interiorString
-      interiorStringStack[-1] += char
+      # for any other character, stay in the current level; append to interiorStringRep
+      interiorStringRepRepStack[-1].append(char)
       return TopLevelState.Instance()
   def __str__(self):
     return "TopLevel"
   
+
 @Singleton
 class MiddleState(object):
-  def readChar(self, parenStack, interiorStringStack, char):
+  def readChar(self, parenStack, interiorStringRepRepStack, char):
     if char == '(':
       # add to the stacks
       parenStack.append('(')
-      interiorStringStack.append('')
+      interiorStringRepRepStack.append(interiorStringRepRepresentation())
       return MiddleState.Instance()
     elif char == ')':
       # according to our Rule, if we are in MiddleState, something is on stack
       parenStack.pop()
-      # it's time to convert the interiorString to a numerical value,
-      # and to append that to the interiorString on the stack level above us
-      interiorString = interiorStringStack.pop() # get last entry, and remove from stack
-      #print ("evaluating interiorString: " + interiorString)
-      value = InteriorExpressionParser.parseString(interiorString)
+      # it's time to convert the interiorStringRep to a numerical value,
+      # and to append that to the interiorStringRep on the stack level above us
+      interiorStringRepRep = interiorStringRepRepStack.pop() # get last entry, and remove from stack
+      #print ("evaluating interiorStringRep: " + interiorStringRep)
+      value = InteriorExpressionParser.parseString(interiorStringRepRep)
       #print ("value after close parenthesis: " + str(value))
-      interiorStringStack[-1] += str(value)
-      
+      interiorStringRepRepStack[-1].append(value)
       # if there is something left on the stack, we remain in Middle state;
       # otherwise, we have closed the last paren, and we can return to TopLevel
       if len(parenStack) == 0:
@@ -159,15 +145,15 @@ class MiddleState(object):
       else:
         return MiddleState.Instance()
     else:
-      # for any other character, stay in the current level; append to interiorString
-      interiorStringStack[-1] += char
+      # for any other character, stay in the current level; append to interiorStringRep
+      interiorStringRepRepStack[-1].append(char)
       return MiddleState.Instance()
   def __str__(self):
     return "Middle"
   
 @Singleton
 class RejectState(object):
-  def readChar(self, parenStack, interiorStringStack, char):
+  def readChar(self, parenStack, interiorStringRepRepStack, char):
     #Once we are in Reject state, we stay there:
     return RejectState.Instance()
   def __str__(self):
@@ -176,7 +162,7 @@ class RejectState(object):
 class StateMachine(object):
   def __init__(self):
     self.stack = []
-    self.interiorStringStack = ['']
+    self.interiorStringRepRepStack = [StringRepresentation()]
     self.state = TopLevelState.Instance()
   def readString(self, inputString):
       # we will delete these lines
@@ -218,15 +204,16 @@ class StateMachine(object):
             keys[j] = inputString[i]
 	    j=j+1
             inputString[i] = Function.yn(1)
+      # now everything is a function pointer
+      inputStringRep = inputString
 
 # we will add these lines
-
-#      for i in range(0, len(inputString))
-#        self.readElement(inputString[i])  
+#      for i in range(0, len(inputStringRep))
+#        self.readElement(inputStringRep[i])  
 
   def readElement(self, element):
     try:
-      self.state = self.state.readChar(self.stack, self.interiorStringStack, element)
+      self.state = self.state.readChar(self.stack, self.interiorStringRepRepStack, element)
     except:
       #print("Rejecting due to exception caught in StateMachine.")
       self.state = RejectState.Instance()
@@ -234,12 +221,12 @@ class StateMachine(object):
   def isInAcceptState(self):
     return self.state is TopLevelState.Instance()
   def value(self):
-    if self.isInAcceptState() and len(self.interiorStringStack) == 1:
-      topLevelString = self.interiorStringStack[0]
+    if self.isInAcceptState() and len(self.interiorStringRepRepStack) == 1:
+      topLevelString = self.interiorStringRepRepStack[0]
       #print("topLevelString: " + topLevelString)
       return InteriorExpressionParser.parseString(topLevelString)
     else:
-      print(self.interiorStringStack)
+      print(self.interiorStringRepRepStack)
       raise SyntaxError("Not in accept state")
 
 def quitGracefully():
