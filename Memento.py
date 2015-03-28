@@ -22,15 +22,15 @@ class Memento(object):
 		self.dataArray.append(Data.Data.yelem)
 		self.dataArray.append(Data.Data.polyOrder)
 		self.dataArray.append(Data.Data.inflowCond)
-		self.dataArray.append(Data.Data.inflowRegion)
+		self.dataArray.append(Data.Data.inflowSpatialFilters)
 		self.dataArray.append(Data.Data.inflowXVelocity)
 		self.dataArray.append(Data.Data.inflowYVelocity)
 		self.dataArray.append(Data.Data.outflowCond)
-		self.dataArray.append(Data.Data.outflowRegion)
+		self.dataArray.append(Data.Data.outflowSpatialFilters)
 		self.dataArray.append(Data.Data.outflowXVelocity)
 		self.dataArray.append(Data.Data.outflowYVelocity)
 		self.dataArray.append(Data.Data.wallCond)
-		self.dataArray.append(Data.Data.wallRegion)
+		self.dataArray.append(Data.Data.wallSpatialFilters)
 		self.dataArray.append(Data.Data.horp)
 		self.dataArray.append(Data.Data.aorm)
 		self.dataArray.append(Data.Data.manualElems)
@@ -54,15 +54,15 @@ class Memento(object):
 		Data.Data.yelem = dataArray[11]
 		Data.Data.polyOrder = dataArray[12]
 		Data.Data.inflowCond = dataArray[13]
-		Data.Data.inflowRegion = dataArray[14]
+		Data.Data.inflowSpatialFilters = dataArray[14]
 		Data.Data.inflowXVelocity = dataArray[15]
 		Data.Data.inflowYVelocity = dataArray[16]
 		Data.Data.outflowCond = dataArray[17]
-		Data.Data.outflowRegion = dataArray[18]
+		Data.Data.outflowSpatialFilters = dataArray[18]
 		Data.Data.outflowXVelocity = dataArray[19]
 		Data.Data.outflowYVelocity = dataArray[20]
 		Data.Data.wallCond = dataArray[21]
-		Data.Data.wallRegion = dataArray[22]
+		Data.Data.wallSpatialFilters = dataArray[22]
 		Data.Data.horp = dataArray[23]
 		Data.Data.aorm = dataArray[24]
 		Data.Data.manualElems = dataArray[25]
