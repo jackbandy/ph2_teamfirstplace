@@ -1,25 +1,27 @@
-#whats the deal with InteriorStringrepStack in the statemachine class. Starts with 1 element then
-#nothing happens to it and then we check if it has one element when we determine if it's accept state
-
-
-
-
 from Singleton import *
 import re # regular expressions
 import atexit # allows graceful quit on Ctrl-D
 from PyCamellia import *
+import Data
 
 #we will never evaluate things without them being functions in Camellia
-
 @Singleton
 class ExponentEvaluator(object):
   def evaluate(self, leftOperand, rightOperand):
-    return leftOperand**rightOperand
+    runTotal = 1
+    exponent = int(rightOperand.evaluate(0))
+    if exponent != rightOperand.evaluate(0):
+      print('This program only supports integer exponents')
+      raise Data.ParseException()
+    for i in range(0, exponent):
+      runTotal = runTotal*leftOperand
+    return runTotal
     
 @Singleton
 class TimesEvaluator(object):
   def evaluate(self, leftOperand, rightOperand):
-    return leftOperand*rightOperand
+      return leftOperand*rightOperand
+      
 
 @Singleton
 class DivideEvaluator(object):
@@ -58,9 +60,6 @@ class InteriorExpressionParser(object):
   @staticmethod
   def parseString(interiorStringRep):
     # the definition of an interiorStringRep is one that has no parentheses in it
-    #should not have any empty strings. makeshift assertion
-    if "" in interiorStringRep:
-      raise SyntaxError("empty strings")
     tokenList = interiorStringRep
     for op in InteriorExpressionParser.operatorPrecedence:
       reducedTokenList = []
@@ -72,7 +71,6 @@ class InteriorExpressionParser(object):
           # apply op to left and right operands
           if len(reducedTokenList) > 0 and InteriorExpressionParser.isFunction(reducedTokenList[-1]):
             leftOperand = reducedTokenList.pop() # last entry in reducedTokenList is our left operand
-            #print("evaluating op " + op + " on (" + str(leftOperand) + ", " + str(rightOperand) + ")")
             value = opEvaluator.evaluate(leftOperand,rightOperand)
           else:
             value = opEvaluator.evaluateUnary(rightOperand)
@@ -98,6 +96,8 @@ class TopLevelState(object):
       return MiddleState.Instance()
     elif char == ')':
       # from Accept state, getting a close paren means Reject
+      print("Unbalanced parentheses")
+      raise Data.ParseException()
       return RejectState.Instance()
     else:
       # for any other character, stay in the current level; append to interiorStringRep
@@ -105,7 +105,6 @@ class TopLevelState(object):
       return TopLevelState.Instance()
   def __str__(self):
     return "TopLevel"
-  
 
 @Singleton
 class MiddleState(object):
@@ -153,22 +152,33 @@ class StateMachine(object):
     self.state = TopLevelState.Instance()
 
   def readString(self, inputString):
-      functionPtrArrayAndOps = self.makeFunctionPtrs(inputString)
-      for i in range(0, len(functionPtrArrayAndOps)):
-        self.readElement(functionPtrArrayAndOps[i])  
+    # make all things like 3(4+2) into 2*(4+2)
+#    inputString = inputString.lower()
+#    inputString = "".join(inputString.split())
+#    inputString = re.split('([0-9]*\.[0-9]+|[0-9]+|[a-z]+|\(|\))',inputString)
+    
+     
+
+3(x+3) ->    3*(x+3)
+
+
+
+
+
+    functionPtrArrayAndOps = self.makeFunctionPtrs(inputString)
+    for i in range(0, len(functionPtrArrayAndOps)):
+      self.readElement(functionPtrArrayAndOps[i])  
 
   def makeFunctionPtrs(self, inputString):
     # First make everything in the string into a functionPtr
       inputString = inputString.lower()
       inputString = "".join(inputString.split())
       #note that inputString is no longer a string technically. It is an array of strings
-      inputString = re.split('([0-9]*\.[0-9]+|[0-9]+|[a-z]+)',inputString)
+      inputString = re.split('([0-9]*\.[0-9]+|[0-9]+|[a-z]+|\(|\))',inputString)
       #remove blank elements
       inputString = [i for i in inputString if i != '']
       reNum = re.compile('([0-9]*\.[0-9]+|[0-9]+)')
       reVar = re.compile('[a-z]+')
-      j = 0
-      vals = ["x", "y"]
       keys = []
       for i in range(0, len(inputString)):
         reNumMatch = reNum.match(inputString[i])
@@ -179,22 +189,16 @@ class StateMachine(object):
         #if inputString[i] is a variable.
         elif (reVarMatch != None and inputString[i] == reVarMatch.group()):
 	  # if j ==0 then keys is empty, and we must store this string
-          if j==0:
+          if len(keys)==0:
             keys.append(inputString[i])
-	    j=j+1
             inputString[i] = Function.xn(1)
           #if this fires then we have already ran into this variable
           elif keys[0] == inputString[i]:
             inputString[i] = Function.xn(1)
           #if j == 1 then keys has one variable in it
-          elif j==1:
-            keys.append(inputString[i])
-	    j=j+1
-            inputString[i] = Function.yn(1)
-          elif keys[1] == inputString[i]:
-            inputString[i] = Function.yn(1)
-          elif (j>len(vals)):
-            raise VariablesError('')
+          elif len(keys)>=1:
+            print('Only one variable is able to be used in the function')
+            raise Data.ParseException()
       return inputString
 
   def readElement(self, element):
@@ -209,13 +213,8 @@ class StateMachine(object):
   def value(self):
     if self.isInAcceptState() and len(self.interiorStringRepStack) == 1:
       topLevelString = self.interiorStringRepStack[0]
-      #print("topLevelString: " + topLevelString)
       return InteriorExpressionParser.parseString(topLevelString)
-# added thid else if for debugging
-    elif len(self.interiorStringRepStack) != 1:
-      print("multiple stringReps")
     else:
-      #print(self.interiorStringRepStack)
       raise SyntaxError("Not in accept state")
 
 def quitGracefully():
@@ -228,10 +227,9 @@ class Parser(object):
 
   def parse(self, inputString):
     stateMachine = StateMachine()
-    #try:
-    stateMachine.readString(inputString)
-    value = stateMachine.value()
-    return value
-    #except:
-    #  print("Syntax error: could not parse string.")
-        #raise #Uncomment this to see what exception was thrown
+    try:
+      stateMachine.readString(inputString)
+      value = stateMachine.value()
+      return value
+    except:
+      raise Data.ParseException

@@ -22,15 +22,15 @@ class Data(object):
 	#Queue to hold each inflow Region
 	#inflowRegion.append(something) or
 	#inflowRegion.popleft() 
-	inflowRegion = collections.deque()
-	inflowXVelocity = collections.deque()
-	inflowYVelocity = collections.deque()
+	inflowSpatialFilters = collections.deque() #deque of spatialFilters
+	inflowXVelocity = collections.deque() #deque of PyCamellia Functions
+	inflowYVelocity = collections.deque() #deque of PyCamellia Functions
 	outflowCond = -1
-	outflowRegion = collections.deque()
+	outflowSpatialFilters = collections.deque()
 	outflowXVelocity = collections.deque()
 	outflowYVelocity = collections.deque()
 	wallCond = -1
-	wallRegion = collections.deque()
+	wallSpatialFilters = collections.deque()
 	mesh = ''
 	solution = ''
 
