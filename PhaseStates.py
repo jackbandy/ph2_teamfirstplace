@@ -4,9 +4,9 @@
 
 from Singleton import *
 import ExitStates
-#import SaveStates
-#import RefineStates
-#import PlotStates
+import SaveStates
+import RefineStates
+import PlotStates
 import LoadStates
 #import CreateStates
 
@@ -19,7 +19,7 @@ class Phase1(object):
         
     def getDict(self):
         return { #"create" : CreateStates.Create.Instance(),
-                 #"load" : LoadStates.Load.Instance(),
+                 "load" : LoadStates.Load.Instance(),
                  "exit": ExitStates.Exit.Instance() }
 
     def act(self, input):
@@ -37,9 +37,9 @@ class Phase2(object):
         
     def getDict(self):
         return { #"create" : CreateStates.Create.Instance(), 
-                 #"load" : LoadStates.Load.Instance(),
-                 #"save" : SaveStates.Save.Instance(),
-                 #"refine" : RefineStates.Refine.Instance(),
+                 "load" : LoadStates.Load.Instance(),
+                 "save" : SaveStates.Save.Instance(),
+                 "refine" : RefineStates.Refine.Instance(),
                  #"plot" : PlotStates.Plot.Instance(),
                  "exit" : ExitStates.Exit.Instance() }
 

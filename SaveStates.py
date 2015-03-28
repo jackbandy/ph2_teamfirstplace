@@ -12,7 +12,7 @@ import Memento
 class Save(object):
 
 	def isAccept(self):
-		return false
+		return False
 	
 	def prompt(self):
 		return "What would you like to call the solution and mesh files?"
@@ -30,7 +30,7 @@ class Save(object):
 class SaveFile(object):
 
 	def isAccept(self):
-		return true
+		return True
 	
 	def prompt(self):
 		return ""

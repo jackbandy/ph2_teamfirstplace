@@ -12,7 +12,7 @@ import pickle
 class Load(object):
 
 	def isAccept(self):
-		return false
+		return False
 	
 	def prompt(self):
 		return "What is the name of the file you would like to load?"
@@ -30,7 +30,7 @@ class Load(object):
 class LoadFile(object):
 
 	def isAccept(self):
-		return true
+		return True
 	
 	def prompt(self):
 		return ""

@@ -12,7 +12,7 @@ class Exit(object):
 		return ""
 
 	def getDict(self):
-		return null
+		return None
 
 	def act(self, entry):
 		print "Exiting... exited."

@@ -11,7 +11,7 @@ import PhaseStates
 class Refine(object):
 
 	def isAccept(self):
-		return false
+		return False
 	
 	def prompt(self):
 		return "h or p refinement?"
@@ -32,7 +32,7 @@ class Refine(object):
 class HorP(object):
 
 	def isAccept(self):
-		return false
+		return False
 	
 	def prompt(self):
 		return "Which elements? You can specify active element numbers 0,1,2,5,8,9,10,... or auto."
