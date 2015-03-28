@@ -40,15 +40,6 @@ class MinusEvaluator(object):
   def evaluateUnary(self, rightOperand):
     return -1*rightOperand
 
-class StringRepresentation(object):
-  def __init__(self):
-    self.rep = []
-  def append(self, argument):
-    (self.rep).append(argument)
-  def pop(self, index):
-    return (self.rep).pop(index)
-
-
 class InteriorExpressionParser(object):
   # set up class-level rules for operator precedence and association of operators with
   # evaluation classes
@@ -68,16 +59,16 @@ class InteriorExpressionParser(object):
   def parseString(interiorStringRep):
     # the definition of an interiorStringRep is one that has no parentheses in it
     #should not have any empty strings. makeshift assertion
-    if "" in interiorStringRep.rep:
+    if "" in interiorStringRep:
       raise SyntaxError("empty strings")
     tokenList = interiorStringRep
     for op in InteriorExpressionParser.operatorPrecedence:
       reducedTokenList = []
       opEvaluator = InteriorExpressionParser.operatorEvaluators[op]
-      while len(tokenList.rep) > 0:
-        token = (tokenList.rep).pop(0) # get the next entry in the list
+      while len(tokenList) > 0:
+        token = tokenList.pop(0) # get the next entry in the list
         if token == op:
-          rightOperand = (tokenList.rep).pop(0) # next entry; should be a number
+          rightOperand = tokenList.pop(0) # next entry; should be a number
           # apply op to left and right operands
           if len(reducedTokenList) > 0 and InteriorExpressionParser.isFunction(reducedTokenList[-1]):
             leftOperand = reducedTokenList.pop() # last entry in reducedTokenList is our left operand
@@ -89,9 +80,9 @@ class InteriorExpressionParser(object):
         else:
           #keep this token as is, for now
           reducedTokenList.append(token)
-      tokenList.rep = reducedTokenList
-    if len(tokenList.rep) == 1:
-      return tokenList.rep[0]
+      tokenList = reducedTokenList
+    if len(tokenList) == 1:
+      return tokenList[0]
     else:
       raise SyntaxError("Extra tokens remain!")
       
@@ -103,7 +94,7 @@ class TopLevelState(object):
     if char == '(':
       # add to the stack
       parenStack.append('(')
-      interiorStringRepStack.append(StringRepresentation())
+      interiorStringRepStack.append([])
       return MiddleState.Instance()
     elif char == ')':
       # from Accept state, getting a close paren means Reject
@@ -122,7 +113,7 @@ class MiddleState(object):
     if char == '(':
       # add to the stacks
       parenStack.append('(')
-      interiorStringRepStack.append(StringRepresentation())
+      interiorStringRepStack.append([])
       return MiddleState.Instance()
     elif char == ')':
       # according to our Rule, if we are in MiddleState, something is on stack
@@ -158,7 +149,7 @@ class RejectState(object):
 class StateMachine(object):
   def __init__(self):
     self.stack = []
-    self.interiorStringRepStack = [StringRepresentation()]
+    self.interiorStringRepStack = [[]]
     self.state = TopLevelState.Instance()
 
   def readString(self, inputString):
@@ -220,7 +211,7 @@ class StateMachine(object):
       topLevelString = self.interiorStringRepStack[0]
       #print("topLevelString: " + topLevelString)
       return InteriorExpressionParser.parseString(topLevelString)
-# added these else ifs for debugging
+# added thid else if for debugging
     elif len(self.interiorStringRepStack) != 1:
       print("multiple stringReps")
     else:
