@@ -157,9 +157,8 @@ class StateMachine(object):
 #    inputString = "".join(inputString.split())
 #    inputString = re.split('([0-9]*\.[0-9]+|[0-9]+|[a-z]+|\(|\))',inputString)
     
-     
 
-3(x+3) ->    3*(x+3)
+
 
 
 

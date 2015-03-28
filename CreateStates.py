@@ -1,7 +1,12 @@
 from Singleton import *
 from PyCamellia import *
 from Data import *
+import re
 
+#removes white space and makes lower case
+def formatInput(string):
+	inputString = inputString.lower()
+	return inputString = "".join(inputString.split())
 
 @Singleton
 class Create(object):
@@ -13,6 +18,7 @@ class Create(object):
 			'( )*navier-stokes( )*' : NavierStokes.Instance()}
 	#expected input "stokes" or "navier-stokes"
 	def act(self, input):
+                input = formatInput(input)
 		stokesOrNS = input
 	def isAccept(self):
 		return False
@@ -24,6 +30,7 @@ class Stokes(object):
 	def getDict(self):
 		return {"( )*\d( )*": Reynolds.Instance()}
 	def act(self, input):
+		input = formatInput(input)
 		reynolds = float(input)
 	def isAccept(self):
 		return False;
@@ -35,6 +42,7 @@ class NavierStokes(object):
 	def getDict(self):
 		return {"( )*\d( )*": Reynolds.Instance()}
 	def act(self, input):
+		input = formatInput(input)
 		reynolds = float(input)
 	def isAccept(self):
 		return False;
@@ -47,7 +55,8 @@ class Reynolds(object):
 		return {"( )*transient( )*": Transient.Intance(),
 			"( )*steady( )*state( )*": SteadyState.Instance()}
 	def act(self, input):
-		#input should be "transient" or "steady state"
+		input = formatInput(input)
+		#input should be "transient" or "steadystate"
 		transientOrSS = input;
 	def isAccept(self):
 		return False;
@@ -58,15 +67,11 @@ class SteadyState(object):
 		return "This solver handles rectangular meshes with lower-left corner at the origin. \n What are the dimensions of your mesh? (E.g., \"1.0 x 2.0\")"
 	def getDict(self):
 		return {"( )*([0-9]*\.[0-9]+|[0-9]+)*( )*x( )*([0-9]*\.[0-9]+|[0-9]+)( )*": MeshDim.Instance()}
-
-
-
-
 	#expects input like "1.0 x 4.0"
 	def act(self, input):
-		theStrings = input.split()
-		xdim = float(theStrings[0])
-		ydim = float(theStrings[2])
+		input = formatInput(input)
+		xdim = float(input[0])
+		ydim = float(input[2])
 	def isAccept(self):
 		return False;
 
@@ -78,9 +83,9 @@ class Transient(object):
 		return {"( )*([0-9]*\.[0-9]+|[0-9]+)*( )*x( )*([0-9]*\.[0-9]+|[0-9]+)( )*": MeshDim.Instance()}
 	# input of format "2.0 x 5.0"
 	def act(self, input):
-		theStrings = input.split()
-		xdim = float(theStrings[0])
-		ydim = float(theStrings[2])
+		input = formatInput(input)
+		xdim = float(input[0])
+		ydim = float(input[2])
 	def isAccept(self):
 		return False;
 
@@ -92,7 +97,7 @@ class MeshDim(object):
 		return {"( )*\d+( )*x( )*\d+( )*": MeshElem.Instance()}
 	#input of format "2 x 5"
 	def act(self, input):
-		theStrings = input.split()
+		input = formatInput(input)
 		xelem = float(input[0])
 		yelem = float(input[2])
 	def isAccept(self):
@@ -104,12 +109,13 @@ class MeshElem(object):
 		return "What polynomial order? (1 to 9)"
 	def getDict(self):
 		#because we don't want to accept 0
-		return {"1": PolyOrder.Instance(), "2": PolyOrder.Instance(), 
-			"3": PolyOrder.Instance(), "4": PolyOrder.Instance(), 
-			"5": PolyOrder.Instance(), "6": PolyOrder.Instance(), 
-			"7": PolyOrder.Instance(), "8": PolyOrder.Instance()
-			"9": PolyOrder.Instance()}
+		return {"( )*1( )*": PolyOrder.Instance(), "( )*2( )*": PolyOrder.Instance(), 
+			"( )*3( )*": PolyOrder.Instance(), "( )*4( )*": PolyOrder.Instance(), 
+			"( )*5( )*": PolyOrder.Instance(), "( )*6( )*": PolyOrder.Instance(), 
+			"( )*7( )*": PolyOrder.Instance(), "( )*8( )*": PolyOrder.Instance()
+			"( )*9( )*": PolyOrder.Instance()}
 	def act(self, input):
+		input = formatInput(input)
 		polyOrder = float(input)
 	def isAccept(self):
 		return False;
@@ -124,6 +130,7 @@ class PolyOrder(object):
 		return {"( )*0( )*": InflowCondVy.Instance(),
 			"( )*/d+( )*": InflowCond.Instance()}
 	def act(self, input):
+		input = formatInput(input)
 		inflowCond = float(input)
 		inflowsAskedFor = 0
 	def isAccept(self):
@@ -135,13 +142,13 @@ class InflowCond(object):
 		return ("For inflow condition " + str(inflowsAskedFor + 1) + ", what region of space? (E.g. \"x=0.5, y > 3\")")
 	def getDict(self):
 		#add spatial filter stuff
-		return {"( )*x( )*=( )*([0-9]*\.[0-9]+|[0-9]+)( )*,( )*y( )*(>|<)([0-9]*\.[0-9]+|[0-9]+)": InflowCondSpace.Instance(),
-			"x(>|<)([0-9]*\.[0-9]+|[0-9]+),y=([0-9]*\.[0-9]+|[0-9]+)": InflowCondSpace.Instance(),
-			"y=([0-9]*\.[0-9]+|[0-9]+),x(>|<)([0-9]*\.[0-9]+|[0-9]+)": InflowCondSpace.Instance(),
-			"y(>|<)([0-9]*\.[0-9]+|[0-9]+),x=([0-9]*\.[0-9]+|[0-9]+)": InflowCondSpace.Instance()}
+		return {"( )*x( )*=( )*([0-9]*\.[0-9]+|[0-9]+)( )*,( )*y( )*(>|<)( )*([0-9]*\.[0-9]+|[0-9]+( )*)": InflowCondSpace.Instance(),
+			"( )*x( )*(>|<)( )*([0-9]*\.[0-9]+|[0-9]+)( )*,( )*y( )*=( )*([0-9]*\.[0-9]+|[0-9]+)( )*": InflowCondSpace.Instance(),
+			"( )*y( )*=( )*([0-9]*\.[0-9]+|[0-9]+)( )*,( )*x( )*(>|<)( )*([0-9]*\.[0-9]+|[0-9]+)( )*": InflowCondSpace.Instance(),
+			"( )*y( )*(>|<)( )*([0-9]*\.[0-9]+|[0-9]+)( )*,( )*x( )*=( )*([0-9]*\.[0-9]+|[0-9]+( )*)": InflowCondSpace.Instance()}
 	def act(self, input):
-		input = input.lower()
-		input = re.split('([0-9]*\.[0-9]+|[0-9]+)')
+		input = formatInput(input)
+		input = re.split('( )*([0-9]*\.[0-9]+|[0-9]+)( )*')
 		if input[0] == 'x=':
 			spatial1 = SpatialFilter.matchingX(float(input[1]))
 			if input[3]: ',y>':
@@ -179,7 +186,7 @@ class InflowCondSpace(object):
 	def getDict(self):
 		return {"[\d\.xy\*\+-/^ ]+": InflowCondVx.Instance()}
 	def act(self, input):
-		input = "".join(input.split())
+		input = formatInput(input)
 		function = (Parser.Parser.Instance()).parse(input)
 		inflowXVelocity.append(function)
 	def isAccept(self):
@@ -197,7 +204,7 @@ class InflowCondVx(object):
 			return {"[\d\.xy\*\+-/^ ]+": InflowCond.Instance()}
 	def act(self, input):
 		inflowsAskedFor = inflowsAskedFor + 1
-		input = "".join(input.split())
+		input = formatInput(input)
 		function = (Parser.Parser.Instance()).parse(input)
 		inflowYVelocity.append(function)
 	def isAccept(self):
@@ -209,9 +216,10 @@ class InflowCondVy(object):
 	def prompt(self):
 		return "How many outflow conditions?"
 	def getDict(self):
-		return {"0": OutflowSpace.Instance(),
-			"/d+": OutflowCond.Instance()}
+		return {"( )*0( )*": OutflowSpace.Instance(),
+			"( )*/d+( )*": OutflowCond.Instance()}
 	def act(self, input):
+		input = formatInput(input)
 		outflowsAskedFor = 0
 		outflowCond = float(input)
 	def isAccept(self):
@@ -222,19 +230,21 @@ class OutflowCond(object):
 	def prompt(self):
 		return "For outflow condition " + str(outflowsAskedFor + 1) + ", what region of space? (E.g. \"x=0.5, y > 3\")"
 	def getDict(self):
+
 		if outflowsAskedFor == outflowCond - 1:
-			return {"x=([0-9]*\.[0-9]+|[0-9]+),y(>|<)([0-9]*\.[0-9]+|[0-9]+)": OutflowSpace.Instance(),
-			"x(>|<)([0-9]*\.[0-9]+|[0-9]+),y=([0-9]*\.[0-9]+|[0-9]+)": OutflowSpace.Instance(),
-			"y=([0-9]*\.[0-9]+|[0-9]+),x(>|<)([0-9]*\.[0-9]+|[0-9]+)": OutflowSpace.Instance(),
-			"y(>|<)([0-9]*\.[0-9]+|[0-9]+),x=([0-9]*\.[0-9]+|[0-9]+)": OutflowSpace.Instance()}
-		else
-			return {"x=([0-9]*\.[0-9]+|[0-9]+),y(>|<)([0-9]*\.[0-9]+|[0-9]+)": OutflowCond.Instance(),
-			"x(>|<)([0-9]*\.[0-9]+|[0-9]+),y=([0-9]*\.[0-9]+|[0-9]+)": OutflowCond.Instance(),
-			"y=([0-9]*\.[0-9]+|[0-9]+),x(>|<)([0-9]*\.[0-9]+|[0-9]+)": OutflowCond.Instance(),
-			"y(>|<)([0-9]*\.[0-9]+|[0-9]+),x=([0-9]*\.[0-9]+|[0-9]+)": OutflowCond.Instance()}nce()}
+			return {"( )*x( )*=( )*([0-9]*\.[0-9]+|[0-9]+)( )*,( )*y( )*(>|<)( )*([0-9]*\.[0-9]+|[0-9]+( )*)": OutflowSpace.Instance(),
+				"( )*x( )*(>|<)( )*([0-9]*\.[0-9]+|[0-9]+)( )*,( )*y( )*=( )*([0-9]*\.[0-9]+|[0-9]+)( )*": OutflowSpace.Instance(),
+				"( )*y( )*=( )*([0-9]*\.[0-9]+|[0-9]+)( )*,( )*x( )*(>|<)( )*([0-9]*\.[0-9]+|[0-9]+)( )*": OutflowSpace.Instance(),
+				"( )*y( )*(>|<)( )*([0-9]*\.[0-9]+|[0-9]+)( )*,( )*x( )*=( )*([0-9]*\.[0-9]+|[0-9]+( )*)": OutflowSpace.Instance()}
+		else:
+			return {"( )*x( )*=( )*([0-9]*\.[0-9]+|[0-9]+)( )*,( )*y( )*(>|<)( )*([0-9]*\.[0-9]+|[0-9]+( )*)": OutflowCond.Instance(),
+				"( )*x( )*(>|<)( )*([0-9]*\.[0-9]+|[0-9]+)( )*,( )*y( )*=( )*([0-9]*\.[0-9]+|[0-9]+)( )*": OutflowCond.Instance(),
+				"( )*y( )*=( )*([0-9]*\.[0-9]+|[0-9]+)( )*,( )*x( )*(>|<)( )*([0-9]*\.[0-9]+|[0-9]+)( )*": OutflowCond.Instance(),
+				"( )*y( )*(>|<)( )*([0-9]*\.[0-9]+|[0-9]+)( )*,( )*x( )*=( )*([0-9]*\.[0-9]+|[0-9]+( )*)": OutflowCond.Instance()}
+
 	def act(self, input):
 		outflowsAskedfor = outflowsAskedfor + 1
-		input = input.lower()
+		input = formatInput(input)
 		input = re.split('([0-9]*\.[0-9]+|[0-9]+)')
 		if input[0] == 'x=':
 			spatial1 = SpatialFilter.matchingX(float(input[1]))
@@ -271,9 +281,10 @@ class OutflowSpace(object):
 	def prompt(self):
 		return "How many wall conditions?"
 	def getDict(self):
-		return {"0": InflowCondSpace.Instance(),
-			"/d+": WallCond.Instance()}
+		return {"( )*0( )*": InflowCondSpace.Instance(),
+			"( )*/d+( )*": WallCond.Instance()}
 	def act(self, input):
+		input = formatInput(input)
 		wallCond = int(input)
 		wallsAskedFor = 0
 	def isAccept(self):
@@ -285,19 +296,19 @@ class WallCond(object):
 		return "For wall condition" + str(wallsAskedFor + 1) + ", what region of space? (E.g. \"x=0.5, y > 3\")"
 	def getDict(self):
 		if wallsAskedFor == wallCond - 1:
-			return {"x=([0-9]*\.[0-9]+|[0-9]+),y(>|<)([0-9]*\.[0-9]+|[0-9]+)": CreateAccept.Instance(),
-			"x(>|<)([0-9]*\.[0-9]+|[0-9]+),y=([0-9]*\.[0-9]+|[0-9]+)": CreateAccept.Instance(),
-			"y=([0-9]*\.[0-9]+|[0-9]+),x(>|<)([0-9]*\.[0-9]+|[0-9]+)": CreateAccept.Instance(),
-			"y(>|<)([0-9]*\.[0-9]+|[0-9]+),x=([0-9]*\.[0-9]+|[0-9]+)": CreateAccept.Instance()}
+			return {"( )*x( )*=( )*([0-9]*\.[0-9]+|[0-9]+)( )*,( )*y( )*(>|<)( )*([0-9]*\.[0-9]+|[0-9]+( )*)": CreateAccept.Instance(),
+				"( )*x( )*(>|<)( )*([0-9]*\.[0-9]+|[0-9]+)( )*,( )*y( )*=( )*([0-9]*\.[0-9]+|[0-9]+)( )*": CreateAccept.Instance(),
+				"( )*y( )*=( )*([0-9]*\.[0-9]+|[0-9]+)( )*,( )*x( )*(>|<)( )*([0-9]*\.[0-9]+|[0-9]+)( )*": CreateAccept.Instance(),
+				"( )*y( )*(>|<)( )*([0-9]*\.[0-9]+|[0-9]+)( )*,( )*x( )*=( )*([0-9]*\.[0-9]+|[0-9]+( )*)": CreateAccept.Instance()}
 		else:
-			return {"x=([0-9]*\.[0-9]+|[0-9]+),y(>|<)([0-9]*\.[0-9]+|[0-9]+)": WallCond.Instance(),
-			"x(>|<)([0-9]*\.[0-9]+|[0-9]+),y=([0-9]*\.[0-9]+|[0-9]+)": WallCond.Instance(),
-			"y=([0-9]*\.[0-9]+|[0-9]+),x(>|<)([0-9]*\.[0-9]+|[0-9]+)": WallCond.Instance(),
-			"y(>|<)([0-9]*\.[0-9]+|[0-9]+),x=([0-9]*\.[0-9]+|[0-9]+)": WallCond.Instance()}
+			return {"( )*x( )*=( )*([0-9]*\.[0-9]+|[0-9]+)( )*,( )*y( )*(>|<)( )*([0-9]*\.[0-9]+|[0-9]+( )*)": WallCond.Instance(),
+				"( )*x( )*(>|<)( )*([0-9]*\.[0-9]+|[0-9]+)( )*,( )*y( )*=( )*([0-9]*\.[0-9]+|[0-9]+)( )*": WallCond.Instance(),
+				"( )*y( )*=( )*([0-9]*\.[0-9]+|[0-9]+)( )*,( )*x( )*(>|<)( )*([0-9]*\.[0-9]+|[0-9]+)( )*": WallCond.Instance(),
+				"( )*y( )*(>|<)( )*([0-9]*\.[0-9]+|[0-9]+)( )*,( )*x( )*=( )*([0-9]*\.[0-9]+|[0-9]+( )*)": WallCond.Instance()}
 	def act(self, input):
 		wallsAskedFor = wallsAskedFor + 1
 		
-		input = input.lower()
+		input = formatInput(input)
 		input = re.split('([0-9]*\.[0-9]+|[0-9]+)')
 		if input[0] == 'x=':
 			spatial1 = SpatialFilter.matchingX(float(input[1]))
@@ -339,8 +350,64 @@ class CreateAccept(object):
 		
 
 
+
+
+
 	def isAccept(self):
 		return True
+
+
+
+def solveNavier:
+	spaceDim = 2
+	Re = reynolds
+	dims = [xdim,ydim]
+	numElements = [xelem,yelem]
+	x0 = [0.,0.]
+	meshTopo = MeshFactory.rectilinearMeshTopology(dims,numElements,x0)
+	#polyOrder
+	delta_k = 1
+
+	form = NavierStokesVGPFormulation(meshTopo,Re,polyOrder,delta_k)
+
+	form.addZeroMeanPressureCondition()
+
+	#assume 1 inflow and outflow condition. Ideally this wouldn't be
+
+	inflowVelocity = Function.vectorize(inflowXVelocity[0], inflowYVelocity[0])
+	form.addInflowCondition(inflowSpatialFilters[0],inflowVelocity)
+	form.addOutflowCondition(outflowSpatialFilters[0])
+	wallBuilding = inflowSpatialFilters[0] or outflowSpatialFilters[0]
+
+	for i in range(1, inflowCond):
+		wallBuilding = wallBuilding or inflowSpatialFilters[i]
+		inflowVelocity = Function.vectorize(inflowXVelocity[i], inflowYVelocity[i])
+		form.addInflowCondition(inflowSpatialFilters[i], inflowVelocity)
+
+	for i in range(1, outflowcond):
+		form.addOutflowCondition(outflowSpatialFilters[i])
+		wallBuilding = wallBuilding or outflowSpatialFilters[i]
+
+	wall = SpatialFilter.negatedFilter(wallBuilding)
+	form.addWallCondition(wall)
+
+	refinementNumber = 0
+	nonlinearThreshold = 1e-3
+
+	#nonlinear Solve
+	maxSteps = 10
+	normOfIncrement = 1
+	stepNumber = 0
+	while stepNumber < maxSteps:
+		form.solveAndAccumulate()
+		normOfIncrement = form.L2NormSolutionIncrement()
+		print("L^2 norm of increment: %0.3f" % normOfIncrement)
+		stepNumber += 1
+
+
+
+	mesh = form.solution().mesh();
+
 
 
 
