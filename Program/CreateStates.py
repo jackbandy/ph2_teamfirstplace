@@ -3,6 +3,7 @@ from PyCamellia import *
 from Data import *
 import re
 import Parser
+import PhaseStates
 
 data = Data()
 
@@ -100,8 +101,8 @@ class MeshDim(object):
 	#input of format "2 x 5"
 	def act(self, input):
 		input = formatInput(input)
-		data.xelem = float(input[0])
-		data.yelem = float(input[2])
+		data.xelem = int(input[0])
+		data.yelem = int(input[2])
 	def isAccept(self):
 		return False;
 
@@ -114,7 +115,7 @@ class MeshElem(object):
 		return {"0( )*[1-9]( )*": PolyOrder.Instance()}
 	def act(self, input):
 		input = formatInput(input)
-		data.polyOrder = float(input)
+		data.polyOrder = int(input)
 	def isAccept(self):
 		return False;
 
@@ -129,7 +130,7 @@ class PolyOrder(object):
 			"1( )*\d+( )*": InflowCond.Instance()}
 	def act(self, input):
 		input = formatInput(input)
-		data.inflowCond = float(input)
+		data.inflowCond = int(input)
 		data.inflowsAskedFor = 0
 	def isAccept(self):
 		return False;
@@ -224,7 +225,7 @@ class InflowCondVy(object):
 	def act(self, input):
 		input = formatInput(input)
 		data.outflowsAskedFor = 0
-		data.outflowCond = float(input)
+		data.outflowCond = int(input)
 	def isAccept(self):
 		return False;
 
@@ -288,14 +289,14 @@ class CreateAccept(object):
 	def prompt(self):
 		return ""
 	def getDict(self):
-		return {"": Phase2.Phase2.Instance()}
+		return {"": PhaseStates.Phase2.Instance()}
 	def act(self, input):
 		if data.stokesOrNS == 'stokes' and data.transientOrSS=='steadystate':
-			solveStokes()
+			data.form = solveStokes()
 		elif data.stokesOrNS == 'stokes' and data.transientOrSS=='transient':
-			solveStokesTransient()
+			data.form = solveStokesTransient()
 		elif data.stokesOrNS == 'navier-stokes':
-			solveNavier()
+			data.form = solveNavier()
 
 	def isAccept(self):
 		return True
@@ -306,7 +307,7 @@ def solveNavier():
 	spaceDim = 2
 	Re = data.reynolds
 	dims = [data.xdim,data.ydim]
-	numElements = [data.xelem,data.yelem]
+	numElements = [int(data.xelem),int(data.yelem)]
 	x0 = [0.,0.]
 	meshTopo = MeshFactory.rectilinearMeshTopology(dims,numElements,x0)
 	#polyOrder
@@ -328,7 +329,7 @@ def solveNavier():
 		inflowVelocity = Function.vectorize(data.inflowXVelocity[i], data.inflowYVelocity[i])
 		form.addInflowCondition(data.inflowSpatialFilters[i], inflowVelocity)
 
-	for i in range(1, data.outflowcond):
+	for i in range(1, data.outflowCond):
 		form.addOutflowCondition(data.outflowSpatialFilters[i])
 		wallBuilding = wallBuilding or data.outflowSpatialFilters[i]
 
@@ -351,7 +352,7 @@ def solveNavier():
 
 
 	mesh = form.solution().mesh();
-
+	return form
 
 def solveStokes():
 
@@ -361,7 +362,7 @@ def solveStokes():
 	mu = 1.0
 	form = StokesVGPFormulation(spaceDim,useConformingTraces,mu)
 	dims = [data.xdim,data.ydim]
-	numElements = [data.xelem,data.yelem]
+	numElements = [int(data.xelem),int(data.yelem)]
 	x0 = [0.,0.]
 	#polyorder
 	meshTopo = MeshFactory.rectilinearMeshTopology(dims,numElements,x0)
@@ -371,7 +372,7 @@ def solveStokes():
 	form.addZeroMeanPressureCondition()
 
 	inflowVelocity = Function.vectorize(data.inflowXVelocity[0], data.inflowYVelocity[0])
-	form.addInflowCondition(data.inflowSpatialFilters[0],data.inflowVelocity)
+	form.addInflowCondition(data.inflowSpatialFilters[0],inflowVelocity)
 	form.addOutflowCondition(data.outflowSpatialFilters[0])
 	wallBuilding = data.inflowSpatialFilters[0] or data.outflowSpatialFilters[0]
 
@@ -380,7 +381,7 @@ def solveStokes():
 		inflowVelocity = Function.vectorize(data.inflowXVelocity[i], data.inflowYVelocity[i])
 		form.addInflowCondition(data.inflowSpatialFilters[i], inflowVelocity)
 
-	for i in range(1, data.outflowcond):
+	for i in range(1, data.outflowCond):
 		form.addOutflowCondition(data.outflowSpatialFilters[i])
 		wallBuilding = wallBuilding or data.outflowSpatialFilters[i]
 
@@ -411,6 +412,7 @@ def solveStokes():
 
 
 	perCellError = form.solution().energyErrorPerCell()
+	return form
 
 
 def solveStokesTransient():
@@ -420,7 +422,7 @@ def solveStokesTransient():
 	mu = 1.0
 
 	dims = [data.xdim,data.ydim]
-	numElements = [data.xelem,data.yelem]
+	numElements = [int(data.xelem),int(data.yelem)]
 	x0 = [0.,0.]
 		#polyorder
 	meshTopo = MeshFactory.rectilinearMeshTopology(dims,numElements,x0)
@@ -428,20 +430,20 @@ def solveStokesTransient():
 
 	transient = True
 	dt = 0.1
-	totalTime = 2.0
+	totalTime = 1.0
 	numTimeSteps = int(totalTime / dt)
 	transientForm = StokesVGPFormulation(spaceDim,useConformingTraces,mu,transient,dt)
 
 	timeRamp = TimeRamp.timeRamp(transientForm.getTimeFunction(),1.0)
 
-	transientForm.initializeSolution(meshTopo,data.polyOrder,delta_k)
+	transientForm.initializeSolution(meshTopo,int(data.polyOrder),delta_k)
 
 	transientForm.addZeroMeanPressureCondition()
 
 
 
 	inflowVelocity = Function.vectorize(data.inflowXVelocity[0], data.inflowYVelocity[0])
-	transientForm.addInflowCondition(data.inflowSpatialFilters[0],data.inflowVelocity)
+	transientForm.addInflowCondition(data.inflowSpatialFilters[0],inflowVelocity)
 	transientForm.addOutflowCondition(data.outflowSpatialFilters[0])
 	wallBuilding = data.inflowSpatialFilters[0] or data.outflowSpatialFilters[0]
 
@@ -450,7 +452,7 @@ def solveStokesTransient():
 		inflowVelocity = Function.vectorize(data.inflowXVelocity[i], data.inflowYVelocity[i])
 		transientForm.addInflowCondition(data.inflowSpatialFilters[i], inflowVelocity)
 
-	for i in range(1, data.outflowcond):
+	for i in range(1, data.outflowCond):
 		transientForm.addOutflowCondition(data.outflowSpatialFilters[i])
 		wallBuilding = wallBuilding or data.outflowSpatialFilters[i]
 
@@ -467,7 +469,7 @@ def solveStokesTransient():
 		transientForm.takeTimeStep()
 		print("Time step %i completed" % timeStepNumber)
 
-
+	return form
 
 
 
