@@ -55,7 +55,7 @@ class Reynolds(object):
 		return "Transient or steady state?"
 	def getDict(self):
 		return {"0( )*transient( )*": Transient.Instance(),
-			"0( )*steady( )*state( )*": SteadyState.Instance()}
+			"1( )*steady( )*state( )*": SteadyState.Instance()}
 	def act(self, input):
 		input = formatInput(input)
 		#input should be "transient" or "steadystate"
@@ -111,11 +111,7 @@ class MeshElem(object):
 		return "What polynomial order? (1 to 9)"
 	def getDict(self):
 		#because we don't want to accept 0
-		return {"0( )*1( )*": PolyOrder.Instance(), "2( )*2( )*": PolyOrder.Instance(), 
-			"3( )*3( )*": PolyOrder.Instance(), "4( )*4( )*": PolyOrder.Instance(), 
-			"5( )*5( )*": PolyOrder.Instance(), "6( )*6( )*": PolyOrder.Instance(), 
-			"7( )*7( )*": PolyOrder.Instance(), "8( )*8( )*": PolyOrder.Instance(),
-			"9( )*9( )*": PolyOrder.Instance()}
+		return {"0( )*[1-9]( )*": PolyOrder.Instance()}
 	def act(self, input):
 		input = formatInput(input)
 		data.polyOrder = float(input)
@@ -220,7 +216,7 @@ class InflowCondVy(object):
 	def prompt(self):
 		return "How many outflow conditions?"
 	def getDict(self):
-		return {"0( )*0( )*": OutflowSpace.Instance(),
+		return {"0( )*0( )*": CreateAccept.Instance(),
 			"1( )*/d+( )*": OutflowCond.Instance()}
 	def act(self, input):
 		input = formatInput(input)
@@ -289,7 +285,7 @@ class CreateAccept(object):
 		return ""
 	def getDict(self):
 		return {"": Phase2.Phase2.Instance()}
-	def act(self):
+	def act(self, input):
 		if data.stokesOrNS == 'stokes':
 			solveStokes()
 		elif data.stokesOrNS == 'navier-stokes':

@@ -3,24 +3,18 @@
 
 
 from Singleton import *
-import ExitStates
-import SaveStates
-import RefineStates
-import PlotStates
-import LoadStates
-import CreateStates
+import SaveStates, RefineStates, PlotStates, LoadStates, CreateStates
 
 
 @Singleton
 class Phase1(object):
 
     def prompt(self):
-        return "Your options now are: create, load, and exit."
+        return "Your options now are: create and load."
         
     def getDict(self):
-        return { "create" : CreateStates.Create.Instance(),
-                 "load" : LoadStates.Load.Instance(),
-                 "exit": ExitStates.Exit.Instance() }
+        return { "0create" : CreateStates.Create.Instance(),
+                 "1load" : LoadStates.Load.Instance(), }
 
     def act(self, input):
         return
@@ -33,15 +27,14 @@ class Phase1(object):
 class Phase2(object):
 
     def prompt(self):
-        return "Your options now are: create, load, save, refine, plot, or exit."
+        return "Your options now are: create, load, save, refine, or plot."
         
     def getDict(self):
-        return { "create" : CreateStates.Create.Instance(), 
-                 "load" : LoadStates.Load.Instance(),
-                 "save" : SaveStates.Save.Instance(),
-                 "refine" : RefineStates.Refine.Instance(),
-                 "plot" : PlotStates.Plot.Instance(),
-                 "exit" : ExitStates.Exit.Instance() }
+        return { "0create" : CreateStates.Create.Instance(), 
+                 "1load" : LoadStates.Load.Instance(),
+                 "2save" : SaveStates.Save.Instance(),
+                 "3refine" : RefineStates.Refine.Instance(),
+                 "4plot" : PlotStates.Plot.Instance(), }
 
     def act(self, input):
         return

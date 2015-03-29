@@ -11,12 +11,12 @@ class PromptPlot:
         return "Options for plotting now are: u1, u2, p, stream, mesh, error"
 
     def getDict(self):
-        return  { "u1": Plotted.Instance(),
-                  "u2": Plotted.Instance(),
-                  "p": Plotted.Instance(),
-                  "stream": Plotted.Instance(),
-                  "mesh": Plotted.Instance(),
-                  "error": Plotted.Instance()
+        return  { "0u1": Plotted.Instance(),
+                  "1u2": Plotted.Instance(),
+                  "2p": Plotted.Instance(),
+                  "3stream": Plotted.Instance(),
+                  "4mesh": Plotted.Instance(),
+                  "5error": Plotted.Instance()
                 }
 
     def act(self, input):
