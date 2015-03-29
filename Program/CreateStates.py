@@ -201,7 +201,7 @@ class InflowCondVx(object):
 		if data.inflowsAskedFor == data.inflowCond - 1:
 			return {"0[\d\.xy\*\+-/^ ]+": InflowCondVy.Instance()}
 		else:
-			return {"1[\d\.xy\*\+-/^ ]+": InflowCond.Instance()}
+			return {"0[\d\.xy\*\+-/^ ]+": InflowCond.Instance()}
 	def act(self, input):
 		data.inflowsAskedFor = data.inflowsAskedFor + 1
 		input = formatInput(input)
