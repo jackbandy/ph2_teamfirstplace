@@ -246,7 +246,7 @@ class OutflowCond(object):
 				"3( )*y( )*(>|<)( )*([0-9]*\.[0-9]+|[0-9]+)( )*,( )*x( )*=( )*([0-9]*\.[0-9]+|[0-9]+( )*)": OutflowCond.Instance()}
 
 	def act(self, input):
-		data.outflowsAskedfor = data.outflowsAskedfor + 1
+		data.outflowsAskedFor = data.outflowsAskedFor + 1
 		input = formatInput(input)
 		inputData = re.split('=|<|>|,', input)
 		input = re.split('( )*([0-9]*\.[0-9]+|[0-9]+)( )*', input)
@@ -276,6 +276,7 @@ class OutflowCond(object):
 		elif input[0] == 'y<':
 			spatial1 = SpatialFilter.lessThanY(float(inputData[1]))
 			spatial2 = SpatialFilter.matchingX(float(inputData[3]))
+		spatialFilter = spatial1 and spatial2
 		data.outflowSpatialFilters.append(spatialFilter)
 
 	def isAccept(self):
@@ -289,8 +290,10 @@ class CreateAccept(object):
 	def getDict(self):
 		return {"": Phase2.Phase2.Instance()}
 	def act(self, input):
-		if data.stokesOrNS == 'stokes':
+		if data.stokesOrNS == 'stokes' and data.transientOrSS=='steadystate':
 			solveStokes()
+		elif data.stokesOrNS == 'stokes' and data.transientOrSS=='transient':
+			solveStokesTransient()
 		elif data.stokesOrNS == 'navier-stokes':
 			solveNavier()
 
