@@ -17,7 +17,7 @@ class Refine(object):
 		return "h or p refinement?"
 
 	def getDict(self):
-		dict = {"h": HorP.Instance(), "p": HorP.Instance()}
+		dict = {"0h": HorP.Instance(), "p": HorP.Instance()}
 		return dict
 
 	def act(self, entry):
@@ -38,7 +38,7 @@ class HorP(object):
 		return "Which elements? You can specify active element numbers 0,1,2,5,8,9,10,... or auto."
 
 	def getDict(self):
-		dict = {"auto": AutoOrMan.Instance(), "(\d+,)*\d+": AutoOrMan.Instance()}
+		dict = {"0auto": AutoOrMan.Instance(), "1(\d+,)*\d+": AutoOrMan.Instance()}
 		return dict
 
 	def act(self, entry):

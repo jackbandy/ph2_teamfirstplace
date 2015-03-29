@@ -18,7 +18,7 @@ class Load(object):
 		return "What is the name of the file you would like to load?"
 
 	def getDict(self):
-		dict = {"\w*": LoadFile.Instance()}
+		dict = {"0\w*": LoadFile.Instance()}
 		return dict
 
 	def act(self, entry):
