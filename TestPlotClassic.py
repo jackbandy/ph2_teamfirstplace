@@ -61,6 +61,8 @@ for cellID in activeCellIDs:
     ypoints.append(point[1])
   zvalues.append(totColor / len(values))
 
+col = zeros((len(xpoints)-1, len(ypoints)-1))
+
 colInd = 0
 xpoints = sorted(list(set(xpoints)))
 ypoints = sorted(list(set(ypoints)))
@@ -77,7 +79,8 @@ for i in range(0, (len(ypoints)-1)):
       cvmax = zvalues[colInd]
     colInd += 1
 
-c = plt.pcolormesh(array(xpoints), array(ypoints), array(plotColors), edgecolors='k', linewidths=2, cmap='afmhot', vmin=cvmin, vmax=cvmax) 
+#c = plt.pcolormesh(array(xpoints), array(ypoints), array(plotColors), edgecolors='k', linewidths=2, cmap='afmhot', vmin=cvmin, vmax=cvmax) 
+c = plt.pcolormesh(array(xpoints), array(ypoints), col, edgecolors='k', linewidths=1, cmap='bwr', vmin='-100', vmax='100') 
 
 plt.title(' u1 ')
 plt.xticks(xpoints) #x ticks are xpoints
