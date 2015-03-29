@@ -19,6 +19,9 @@ class Data(object):
 	yelem = -1
 	polyOrder = -1
 	inflowCond = -1
+	inflowRegion = []
+	outflowRegion = []
+	wallRegion = []
 	#Queue to hold each inflow Region
 	#inflowRegion.append(something) or
 	#inflowRegion.popleft() 

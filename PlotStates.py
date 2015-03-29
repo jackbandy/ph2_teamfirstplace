@@ -2,6 +2,12 @@
 # States for selection of "plot"
 
 from Singleton import *
+import matplotlib.pyplot as plt
+from matplotlib import *
+import numpy as np
+from numpy import *
+from PyCamellia import *
+import Data
 
 plotType = ''
 
@@ -20,35 +26,36 @@ class PromptPlot:
                 }
 
     def act(self, input):
+	dt = Data.Data()
         if input is "u1":
 	  plotType = 'u1'
-	  plt_soln = Function.solution(form.u(1),form.solution()) 
+	  plt_soln = Function.solution(dt.form.u(1),dt.form.solution()) 
 	  plotstd()
         if input is "u2":
 	  plotType = 'u2'
-	  plt_soln = Function.solution(form.u(2),form.solution()) 
+	  plt_soln = Function.solution(dt.form.u(2),dt.form.solution()) 
 	  plotstd()
         if input is "p": 
 	  plotType = 'p'
-	  plt_soln = Function.solution(form.p(),form.solution()) 
+	  plt_soln = Function.solution(dt.form.p(),dt.form.solution()) 
 	  plotstd()
         if input is "stream":
 	  plotType = 'Sream'
-	  stream = form.streamSolution()
+	  stream = Data.form.streamSolution()
 	  stream.solve()
-	  plt_soln = Function.solution(form.streamPhi(),stream) 
+	  plt_soln = Function.solution(dt.form.streamPhi(),stream) 
 	  plotstd()
         if input is "mesh":
 	  plotType = 'Mesh'
-	  pass
+	  plotmesh()
         if input is "error":
 	  if (data.stokesOrNS is 'stokes'):
 	    plotType = 'Stokes Error'
-	    cellerrs = form.solution().energyErrorPerCell()
+	    cellerrs = Data.form.solution().energyErrorPerCell()
 	    ploterror()
 	  else:
 	    plotType = 'Navier-Stokes Error'
-	    cellerrs = form.solutionIncrement().energyErrorPerCell()
+	    cellerrs = Data.form.solutionIncrement().energyErrorPerCell()
 	    ploterror()
 
 
