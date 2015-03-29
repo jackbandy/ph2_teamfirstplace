@@ -8,7 +8,7 @@ data = Data()
 #removes white space and makes lower case
 def formatInput(string):
 	inputString = inputString.lower()
-	return inputString = "".join(inputString.split())
+	return "".join(inputString.split())
 
 @Singleton
 class Create(object):
@@ -114,7 +114,7 @@ class MeshElem(object):
 		return {"( )*1( )*": PolyOrder.Instance(), "( )*2( )*": PolyOrder.Instance(), 
 			"( )*3( )*": PolyOrder.Instance(), "( )*4( )*": PolyOrder.Instance(), 
 			"( )*5( )*": PolyOrder.Instance(), "( )*6( )*": PolyOrder.Instance(), 
-			"( )*7( )*": PolyOrder.Instance(), "( )*8( )*": PolyOrder.Instance()
+			"( )*7( )*": PolyOrder.Instance(), "( )*8( )*": PolyOrder.Instance(),
 			"( )*9( )*": PolyOrder.Instance()}
 	def act(self, input):
 		input = formatInput(input)
@@ -141,7 +141,7 @@ class PolyOrder(object):
 @Singleton
 class InflowCond(object):
 	def prompt(self):
-		return ("For inflow condition " + str(inflowsAskedFor + 1) + ", what region of space? (E.g. \"x=0.5, y > 3\")")
+		return ("For inflow condition " + str(data.inflowsAskedFor + 1) + ", what region of space? (E.g. \"x=0.5, y > 3\")")
 	def getDict(self):
 		#add spatial filter stuff
 		return {"( )*x( )*=( )*([0-9]*\.[0-9]+|[0-9]+)( )*,( )*y( )*(>|<)( )*([0-9]*\.[0-9]+|[0-9]+( )*)": InflowCondSpace.Instance(),
@@ -150,20 +150,22 @@ class InflowCond(object):
 			"( )*y( )*(>|<)( )*([0-9]*\.[0-9]+|[0-9]+)( )*,( )*x( )*=( )*([0-9]*\.[0-9]+|[0-9]+( )*)": InflowCondSpace.Instance()}
 	def act(self, input):
 		input = formatInput(input)
-		input = re.split('( )*([0-9]*\.[0-9]+|[0-9]+)( )*')
+		input = re.split('( )*([0-9]*\.[0-9]+|[0-9]+)( )*', input)
 		if input[0] == 'x=':
 			spatial1 = SpatialFilter.matchingX(float(input[1]))
-			if input[3]: ',y>':
-				spatial2 = SpatialFilter.greaterThanY(float(input[4])
-			elif input[3]: ',y<':
+			if input[3] == ',y>':
+				spatial2 = SpatialFilter.greaterThanY(float(input[4]))
+			elif input[3]== ',y<':
 				spatial2 = SpatialFilter.lessThanY(float(input[4]))
+			else:
+				print("this shouldn't happen")
 		elif input[0] == 'x>':
 			spatial1 = SpatialFilter.greaterThanX(float(input[1]))
 			#must be y=	
 			spatial2 = SpatialFilter.matchingY(float(input[4]))
 		elif input[0] == 'x<':
 			spatial1 = SpatialFilter.lessThanX(float(input[1]))	
-			spatial2 = SpatialFilter.matchingThanY(float(input[4]))
+			spatial2 = SpatialFilter.matchingY(float(input[4]))
 		elif input[0] == 'y=':
 			spatial1 = SpatialFilter.matchingY(float(input[1]))
 			if input[3]==',x>':
@@ -202,7 +204,7 @@ class InflowCondVx(object):
 		#if there's no more to be asked for
 		if inflowsAskedFor == inflowCond - 1:
 			return {"[\d\.xy\*\+-/^ ]+": InflowCondVy.Instance()}
-		else
+		else:
 			return {"[\d\.xy\*\+-/^ ]+": InflowCond.Instance()}
 	def act(self, input):
 		data.inflowsAskedFor = data.inflowsAskedFor + 1
@@ -250,9 +252,9 @@ class OutflowCond(object):
 		input = re.split('([0-9]*\.[0-9]+|[0-9]+)')
 		if input[0] == 'x=':
 			spatial1 = SpatialFilter.matchingX(float(input[1]))
-			if input[3]: ',y>':
-				spatial2 = SpatialFilter.greaterThanY(float(input[4])
-			elif input[3]: ',y<':
+			if input[3]==',y>':
+				spatial2 = SpatialFilter.greaterThanY(float(input[4]))
+			elif input[3]== ',y<':
 				spatial2 = SpatialFilter.lessThanY(float(input[4]))
 		elif input[0] == 'x>':
 			spatial1 = SpatialFilter.greaterThanX(float(input[1]))
@@ -260,7 +262,7 @@ class OutflowCond(object):
 			spatial2 = SpatialFilter.matchingY(float(input[4]))
 		elif input[0] == 'x<':
 			spatial1 = SpatialFilter.lessThanX(float(input[1]))	
-			spatial2 = SpatialFilter.matchingThanY(float(input[4]))
+			spatial2 = SpatialFilter.matchingY(float(input[4]))
 		elif input[0] == 'y=':
 			spatial1 = SpatialFilter.matchingY(float(input[1]))
 			if input[3]==',x>':
@@ -314,9 +316,9 @@ class WallCond(object):
 		input = re.split('([0-9]*\.[0-9]+|[0-9]+)')
 		if input[0] == 'x=':
 			spatial1 = SpatialFilter.matchingX(float(input[1]))
-			if input[3]: ',y>':
-				spatial2 = SpatialFilter.greaterThanY(float(input[4])
-			elif input[3]: ',y<':
+			if input[3]== ',y>':
+				spatial2 = SpatialFilter.greaterThanY(float(input[4]))
+			elif input[3]== ',y<':
 				spatial2 = SpatialFilter.lessThanY(float(input[4]))
 		elif input[0] == 'x>':
 			spatial1 = SpatialFilter.greaterThanX(float(input[1]))
@@ -324,7 +326,7 @@ class WallCond(object):
 			spatial2 = SpatialFilter.matchingY(float(input[4]))
 		elif input[0] == 'x<':
 			spatial1 = SpatialFilter.lessThanX(float(input[1]))	
-			spatial2 = SpatialFilter.matchingThanY(float(input[4]))
+			spatial2 = SpatialFilter.matchingY(float(input[4]))
 		elif input[0] == 'y=':
 			spatial1 = SpatialFilter.matchingY(float(input[1]))
 			if input[3]==',x>':
