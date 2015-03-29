@@ -4,6 +4,8 @@
 import unittest
 import PlotStates
 import TestData
+import Data
+from PyCamellia import *
 
 
 class PlotTests(unittest.TestCase):

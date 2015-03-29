@@ -8,62 +8,69 @@ import numpy as np
 from numpy import *
 from PyCamellia import *
 import Data
+import TestData
 
-plotType = ''
 
 @Singleton
-class PromptPlot:
+class PromptPlot(object):
+
+    plotType = ''
     def prompt(self):
         return "Options for plotting now are: u1, u2, p, stream, mesh, error"
 
     def getDict(self):
-        return  { "0u1": Plotted.Instance(),
-                  "1u2": Plotted.Instance(),
-                  "2p": Plotted.Instance(),
-                  "3stream": Plotted.Instance(),
-                  "4mesh": Plotted.Instance(),
-                  "5error": Plotted.Instance()
+        return  { "u1": Plotted.Instance(),
+                  "u2": Plotted.Instance(),
+                  "p": Plotted.Instance(),
+                  "stream": Plotted.Instance(),
+                  "mesh": Plotted.Instance(),
+                  "error": Plotted.Instance()
                 }
 
     def act(self, input):
-	dt = Data.Data()
+	#td = TestData.TestData()
+	#td.setData()
+	form = Data.Data().form
+
         if input is "u1":
 	  plotType = 'u1'
-	  plt_soln = Function.solution(dt.form.u(1),dt.form.solution()) 
-	  plotstd()
+	  plt_soln = Function.solution(form.u(1),form.solution()) 
+	  self.plotstd(plt_soln)
         if input is "u2":
 	  plotType = 'u2'
-	  plt_soln = Function.solution(dt.form.u(2),dt.form.solution()) 
-	  plotstd()
+	  plt_soln = Function.solution(form.u(2),form.solution()) 
+	  self.plotstd(plt_soln)
         if input is "p": 
 	  plotType = 'p'
-	  plt_soln = Function.solution(dt.form.p(),dt.form.solution()) 
-	  plotstd()
+	  plt_soln = Function.solution(form.p(),form.solution()) 
+	  self.plotstd(plt_soln)
         if input is "stream":
 	  plotType = 'Sream'
-	  stream = Data.form.streamSolution()
+	  form.solve()
+	  stream = form.streamSolution()
 	  stream.solve()
-	  plt_soln = Function.solution(dt.form.streamPhi(),stream) 
-	  plotstd()
+	  plt_soln = Function.solution(form.streamPhi(),stream) 
+	  self.plotstd(plt_soln)
         if input is "mesh":
 	  plotType = 'Mesh'
-	  plotmesh()
+	  self.plotmesh()
         if input is "error":
-	  if (data.stokesOrNS is 'stokes'):
+	  if (Data.Data.stokesOrNS is 'stokes'):
 	    plotType = 'Stokes Error'
-	    cellerrs = Data.form.solution().energyErrorPerCell()
-	    ploterror()
+	    cellerrs = form.solution().energyErrorPerCell()
+	    self.ploterror()
 	  else:
 	    plotType = 'Navier-Stokes Error'
-	    cellerrs = Data.form.solutionIncrement().energyErrorPerCell()
-	    ploterror()
+	    cellerrs = form.solutionIncrement().energyErrorPerCell()
+	    self.ploterror()
 
 
     def isAccept(self):
         return False
 
 
-    def plotstd():
+    def plotstd(self, plt_soln):
+	mesh = Data.Data().form.solution().mesh()
 	xpoints = []
 	ypoints = []
 	zvalues = []
@@ -71,7 +78,7 @@ class PromptPlot:
 	badv = [[-1.,-1.],[1.,-1.],[1.,1.],[-1.,1.]]
 	for cellID in activeCellIDs:
 	  goodv = array(mesh.verticesForCell(cellID))
-	  (values,points) = u1_soln.getCellValues(mesh,cellID,badv)
+	  (values,points) = plt_soln.getCellValues(mesh,cellID,badv)
 	  totColor = 0;
 	  for val in values:
 	    totColor += val
@@ -101,7 +108,7 @@ class PromptPlot:
 	print(plotColors)	
 	c = plt.pcolormesh(array(xpoints), array(ypoints), array(plotColors), edgecolors='k', linewidths=2, cmap='afmhot', vmin=cvmin, vmax=cvmax)
 	
-	plt.title(plotType)
+	plt.title(self.plotType)
 	plt.xticks(xpoints) #x ticks are xpoints
 	plt.yticks(ypoints)
 	plt.xlim(0, xpoints[len(xpoints)-1]) #sorted, so max = last item
@@ -112,15 +119,14 @@ class PromptPlot:
 
 
 
-    def plotmesh():
+    def plotmesh(self):
+	mesh = Data.Data().form.solution().mesh()
 	xpoints = []
         ypoints = []
         zvalues = []
         activeCellIDs = mesh.getActiveCellIDs()
         for cellID in activeCellIDs:
           goodv = mesh.verticesForCell(cellID)
-          for val in values:
-            totColor += val
           for point in goodv:
             xpoints.append(point[0])
             ypoints.append(point[1])
@@ -139,11 +145,12 @@ class PromptPlot:
         plt.show()
 
 
-    def ploterror():
+    def ploterror(self):
 	xpoints = []
 	ypoints = []
 	zvalues = []
-	cellerrs = form.solution().energyErrorPerCell()
+	cellerrs = Data.Data.form.solution().energyErrorPerCell()
+	mesh = Data.Data().form.solution().mesh()
 	
 	for cellID in cellerrs.keys():
 	  goodv = array(mesh.verticesForCell(cellID))
