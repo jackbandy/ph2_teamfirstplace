@@ -42,8 +42,14 @@ class PromptPlot:
 	  plotType = 'Mesh'
 	  pass
         if input is "error":
-	  plotType = 'Error'
-	  pass
+	  if (data.stokesOrNS is 'stokes'):
+	    plotType = 'Stokes Error'
+	    cellerrs = form.solution().energyErrorPerCell()
+	    ploterror()
+	  else:
+	    plotType = 'Navier-Stokes Error'
+	    cellerrs = form.solution().energyErrorPerCell()
+	    ploterror()
 
 
     def isAccept(self):
@@ -84,7 +90,8 @@ class PromptPlot:
 	      cvmax = zvalues[colInd]
 	    colInd += 1
 	
-	
+
+	print(plotColors)	
 	c = plt.pcolormesh(array(xpoints), array(ypoints), array(plotColors), edgecolors='k', linewidths=2, cmap='afmhot', vmin=cvmin, vmax=cvmax)
 	
 	plt.title(plotType)
@@ -115,8 +122,7 @@ class PromptPlot:
         colInd = 0
         xpoints = sorted(list(set(xpoints)))
         ypoints = sorted(list(set(ypoints)))
-        c = plt.pcolormesh(array(xpoints), array(ypoints), array(zvalues), edgecolors='k', linewidths=2, 
-                           cmap='bwr', vmin='-100', vmax='100') 
+        c = plt.pcolormesh(array(xpoints), array(ypoints), array(zvalues), edgecolors='k', linewidths=2, cmap='bwr', vmin='-100', vmax='100') 
 
         plt.title('Mesh')
         plt.xticks(xpoints)
@@ -127,7 +133,37 @@ class PromptPlot:
 
 
     def ploterror():
-      pass
+	xpoints = []
+	ypoints = []
+	zvalues = []
+	cellerrs = form.solution().energyErrorPerCell()
+	
+	for cellID in cellerrs.keys():
+	  goodv = array(mesh.verticesForCell(cellID))
+	  zvalues.append(cellerrs[cellID])
+	  for point in goodv:
+	    xpoints.append(point[0])
+	    ypoints.append(point[1])
+	
+	xpoints = sorted(list(set(xpoints)))
+	ypoints = sorted(list(set(ypoints)))
+	colors = []
+	colInd = 0
+	for i in range(0, (len(ypoints)-1)):
+	  colors.append([])
+	  for j in range(0, (len(xpoints)-1)):
+	    colors[i].append(zvalues[colInd])
+	    colInd += 1
+	
+	cvmin = 0;
+	cvmax = 0;
+	c = plt.pcolormesh(array(xpoints), array(ypoints), array(colors), edgecolors='k', linewidths=2, cmap='afmhot', vmin=min(zvalues), vmax=max(zvalues))
+	plt.title('plotType')
+	plt.xticks(xpoints) #x ticks are xpoints
+	plt.yticks(ypoints)
+	plt.xlim(0, xpoints[len(xpoints)-1]) #sorted, so max = last item
+	plt.ylim(0, xpoints[len(xpoints)-1])
+	plt.show()
 
 
 
@@ -144,4 +180,5 @@ class Plotted:
 
     def isAccept(self):
         return True
+
 
