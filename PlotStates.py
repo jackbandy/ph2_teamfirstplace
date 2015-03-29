@@ -48,7 +48,7 @@ class PromptPlot:
 	    ploterror()
 	  else:
 	    plotType = 'Navier-Stokes Error'
-	    cellerrs = form.solution().energyErrorPerCell()
+	    cellerrs = form.solutionIncrement().energyErrorPerCell()
 	    ploterror()
 
 
