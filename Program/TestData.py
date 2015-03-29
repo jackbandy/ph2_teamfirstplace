@@ -20,10 +20,6 @@ class TestData(object):
 	Data.Data.outflowRegion.append("x=30")
 	Data.Data.outflowXVelocity.append("")
 	Data.Data.outflowYVelocity.append("")
-	Data.Data.wallCond = 3
-	Data.Data.wallRegion.append("x = 0, y < 1")
-	Data.Data.wallRegion.append("y = 0")
-	Data.Data.wallRegion.append("y=2")
 	Data.Data.horp = 'h'
 	Data.Data.aorm = 'auto'
 	Data.Data.manualElems = ''

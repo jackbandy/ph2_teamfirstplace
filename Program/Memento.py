@@ -29,8 +29,6 @@ class Memento(object):
 		self.dataArray.append(Data.Data.outflowSpatialFilters)
 		self.dataArray.append(Data.Data.outflowXVelocity)
 		self.dataArray.append(Data.Data.outflowYVelocity)
-		self.dataArray.append(Data.Data.wallCond)
-		self.dataArray.append(Data.Data.wallSpatialFilters)
 		self.dataArray.append(Data.Data.horp)
 		self.dataArray.append(Data.Data.aorm)
 		self.dataArray.append(Data.Data.manualElems)
@@ -61,8 +59,6 @@ class Memento(object):
 		Data.Data.outflowSpatialFilters = dataArray[18]
 		Data.Data.outflowXVelocity = dataArray[19]
 		Data.Data.outflowYVelocity = dataArray[20]
-		Data.Data.wallCond = dataArray[21]
-		Data.Data.wallSpatialFilters = dataArray[22]
 		Data.Data.horp = dataArray[23]
 		Data.Data.aorm = dataArray[24]
 		Data.Data.manualElems = dataArray[25]

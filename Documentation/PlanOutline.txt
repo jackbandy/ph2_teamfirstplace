@@ -2,29 +2,45 @@ Four items of incomparable weight are due for Phase II.
 
 1. Design document:
    a) PlanOutline.txt - You are here :)
-   b) outline.jpg
+   b) stateDesignDrawing.jpg
 
 2. Testing plan:
    a) TestingPlan.txt
-   b) outline.jpg
+   b) stateDesignDrawing.jpg
 
 3. Tests:
-   a) RunTests.py
-   b) TestSuite.py
-   c) RETest.py
-   d) ParserTests.py
-   e) Plottests.py
-   *other test documents to come*
+   a) TestSuite.py
+   b) ParserTests.py
+   c) PlotTests.py
+   d) LoadSaveTests.py
+   e) RefineTests.py
 
 
 4. The program:
-   a) Parser.py: the input parser
-   b) CamelliaSolver.py: the driver
-   c) Data.py: central module for program variables
-   d) ExitStates.py: exits out of the program
-   e) LoadStates.py: loads saved solutions/meshes
-   f) PhaseStates.py: holds accept states
-   g) PlotStates.py: plots aspects of the solution
-   h) Refine.py: for refining solutions/meshes
-   i) RefineStates.py: state bridge for Refine.py
+   a) CamelliaSolver.py: Starts the Program (through Driver.py)
+
+   b) Driver.py: Holds/updates current state, parses input, and distributes usable input to the different states)
+
+   c) State Interface (nonexistant because of duck-typing)
+	i) function Prompt(): returns what the driver should print
+
+	ii) function getDict(): returns a str->state.Instance() dictionary that maps correct inputs (words or regular expressions) to the respective instances of states that they link to
+
+	iii) function isAccept(): returns if a state is an accept state (end of the line of sorts in that it doesn't take an input to get to the next state (which is Phase2))
+
+	iv) function act(str): takes the input (which has been verified against the dictionary already in Driver.py) and does whatever underlying thing needs to be done by the state in between a correct input being enetered and the state being changed in Driver.py
+
+   d) Data.py: central class for program variables
+
+   e) PhaseStates.py: Contains the states to link to correct state path
+
+   f) ExitStates.py: Contains the states to exit out of the program
+
+   g) LoadStates.py: Contains the states to loads saved solutions/meshes
+
+   h) PlotStates.py: plots aspects of the solution
+
+   i) Refine.py: for refining solutions/meshes
+
+   j) RefineStates.py: state bridge for Refine.py
 
