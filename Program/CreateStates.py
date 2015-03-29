@@ -201,7 +201,7 @@ class InflowCondVx(object):
 		if data.inflowsAskedFor == data.inflowCond - 1:
 			return {"0[\d\.xy\*\+-/^ ]+": InflowCondVy.Instance()}
 		else:
-			return {"1[\d\.xy\*\+-/^ ]+": InflowCond.Instance()}
+			return {"0[\d\.xy\*\+-/^ ]+": InflowCond.Instance()}
 	def act(self, input):
 		data.inflowsAskedFor = data.inflowsAskedFor + 1
 		input = formatInput(input)
@@ -217,7 +217,10 @@ class InflowCondVy(object):
 		return "How many outflow conditions?"
 	def getDict(self):
 		return {"0( )*0( )*": CreateAccept.Instance(),
-			"1( )*/d+( )*": OutflowCond.Instance()}
+			"1( )*\d+( )*": OutflowCond.Instance()}
+
+
+
 	def act(self, input):
 		input = formatInput(input)
 		data.outflowsAskedFor = 0
