@@ -1,4 +1,5 @@
-# Seth Wulbecker
+# ExitStates.py
+# Derek Schlabach
 # Accept state for when Exit is called
 
 from Singleton import *

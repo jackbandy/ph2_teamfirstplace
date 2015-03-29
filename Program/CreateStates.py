@@ -109,12 +109,9 @@ class MeshElem(object):
 @Singleton
 class PolyOrder(object):
 	def prompt(self):
-		return "How many inflow conditions?"
+		return "How many inflow conditions (1 or more)?"
 	def getDict(self):
-		#Should we accept 0? Right now we are.
-		# if it's zero, don't ask for inflow conditions.
-		return {"0( )*0( )*": InflowCondVy.Instance(),
-			"1( )*\d+( )*": InflowCond.Instance()}
+		return {"0( )*[1-9]\d*( )*": InflowCond.Instance()}
 	def act(self, input):
 		input = formatInput(input)
 		data.inflowCond = int(input)
@@ -202,10 +199,9 @@ class InflowCondVx(object):
 @Singleton
 class InflowCondVy(object):
 	def prompt(self):
-		return "How many outflow conditions?"
+		return "How many outflow conditions (1 or more)?"
 	def getDict(self):
-		return {"0( )*0( )*": CreateAccept.Instance(),
-			"1( )*\d+( )*": OutflowCond.Instance()}
+		return {"0( )*[1-9]\d*( )*": OutflowCond.Instance()}
 
 
 

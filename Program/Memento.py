@@ -59,12 +59,12 @@ class Memento(object):
 		Data.Data.outflowSpatialFilters = dataArray[18]
 		Data.Data.outflowXVelocity = dataArray[19]
 		Data.Data.outflowYVelocity = dataArray[20]
-		Data.Data.horp = dataArray[23]
-		Data.Data.aorm = dataArray[24]
-		Data.Data.manualElems = dataArray[25]
-		Data.Data.inflowsAskedFor = dataArray[26]
-		Data.Data.outflowsAskedFor = dataArray[27]
-		Data.Data.wallsAskedFor = dataArray[28]
+		Data.Data.horp = dataArray[21]
+		Data.Data.aorm = dataArray[22]
+		Data.Data.manualElems = dataArray[23]
+		Data.Data.inflowsAskedFor = dataArray[24]
+		Data.Data.outflowsAskedFor = dataArray[25]
+		Data.Data.wallsAskedFor = dataArray[26]
 
 
 
