@@ -2,6 +2,7 @@ from Singleton import *
 from PyCamellia import *
 from Data import *
 import re
+import Parser
 
 data = Data()
 
@@ -15,8 +16,8 @@ class Create(object):
 	def prompt(self):
 		return "Before we solve, I need to ask you some setup questions. \nWould you like to solve Stokes or Navier-Stokes?"
 	def getDict(self):
-		return {'( )*stokes( )*' : Stokes.Instance(),
-			'( )*navier-stokes( )*' : NavierStokes.Instance()}
+		return {'0( )*stokes( )*' : Stokes.Instance(),
+			'1( )*navier-stokes( )*' : NavierStokes.Instance()}
 	#expected input "stokes" or "navier-stokes"
 	def act(self, input):
                 input = formatInput(input)
@@ -29,7 +30,7 @@ class Stokes(object):
 	def prompt(self):
 		return "What Reynolds number?"
 	def getDict(self):
-		return {"( )*\d+( )*": Reynolds.Instance()}
+		return {"0( )*\d+( )*": Reynolds.Instance()}
 	def act(self, input):
 		input = formatInput(input)
 		data.reynolds = float(input)
@@ -41,7 +42,7 @@ class NavierStokes(object):
 	def prompt(self):
 		return "What Reynolds number?"
 	def getDict(self):
-		return {"( )*\d+( )*": Reynolds.Instance()}
+		return {"0( )*\d+( )*": Reynolds.Instance()}
 	def act(self, input):
 		input = formatInput(input)
 		data.reynolds = float(input)
@@ -53,8 +54,8 @@ class Reynolds(object):
 	def prompt(self):
 		return "Transient or steady state?"
 	def getDict(self):
-		return {"( )*transient( )*": Transient.Instance(),
-			"( )*steady( )*state( )*": SteadyState.Instance()}
+		return {"0( )*transient( )*": Transient.Instance(),
+			"0( )*steady( )*state( )*": SteadyState.Instance()}
 	def act(self, input):
 		input = formatInput(input)
 		#input should be "transient" or "steadystate"
@@ -67,7 +68,7 @@ class SteadyState(object):
 	def prompt(self):
 		return "This solver handles rectangular meshes with lower-left corner at the origin. \n What are the dimensions of your mesh? (E.g., \"1.0 x 2.0\")"
 	def getDict(self):
-		return {"( )*([0-9]*\.[0-9]+|[0-9]+)*( )*x( )*([0-9]*\.[0-9]+|[0-9]+)( )*": MeshDim.Instance()}
+		return {"0( )*([0-9]*\.[0-9]+|[0-9]+)*( )*x( )*([0-9]*\.[0-9]+|[0-9]+)( )*": MeshDim.Instance()}
 	#expects input like "1.0 x 4.0"
 	def act(self, input):
 		input = formatInput(input)
@@ -81,7 +82,7 @@ class Transient(object):
 	def prompt(self):
 		return "This solver handles rectangular meshes with lower-left corner at the origin. \n What are the dimensions of your mesh? (E.g., \"1.0 x 2.0\")"
 	def getDict(self):
-		return {"( )*([0-9]*\.[0-9]+|[0-9]+)*( )*x( )*([0-9]*\.[0-9]+|[0-9]+)( )*": MeshDim.Instance()}
+		return {"0( )*([0-9]*\.[0-9]+|[0-9]+)*( )*x( )*([0-9]*\.[0-9]+|[0-9]+)( )*": MeshDim.Instance()}
 	# input of format "2.0 x 5.0"
 	def act(self, input):
 		input = formatInput(input)
@@ -95,7 +96,7 @@ class MeshDim(object):
 	def prompt(self):
 		return "How many elements in the initial mesh? (E.g. \"3 x 5\")"
 	def getDict(self):
-		return {"( )*\d+( )*x( )*\d+( )*": MeshElem.Instance()}
+		return {"0( )*\d+( )*x( )*\d+( )*": MeshElem.Instance()}
 	#input of format "2 x 5"
 	def act(self, input):
 		input = formatInput(input)
@@ -110,11 +111,11 @@ class MeshElem(object):
 		return "What polynomial order? (1 to 9)"
 	def getDict(self):
 		#because we don't want to accept 0
-		return {"( )*1( )*": PolyOrder.Instance(), "( )*2( )*": PolyOrder.Instance(), 
-			"( )*3( )*": PolyOrder.Instance(), "( )*4( )*": PolyOrder.Instance(), 
-			"( )*5( )*": PolyOrder.Instance(), "( )*6( )*": PolyOrder.Instance(), 
-			"( )*7( )*": PolyOrder.Instance(), "( )*8( )*": PolyOrder.Instance(),
-			"( )*9( )*": PolyOrder.Instance()}
+		return {"0( )*1( )*": PolyOrder.Instance(), "2( )*2( )*": PolyOrder.Instance(), 
+			"3( )*3( )*": PolyOrder.Instance(), "4( )*4( )*": PolyOrder.Instance(), 
+			"5( )*5( )*": PolyOrder.Instance(), "6( )*6( )*": PolyOrder.Instance(), 
+			"7( )*7( )*": PolyOrder.Instance(), "8( )*8( )*": PolyOrder.Instance(),
+			"9( )*9( )*": PolyOrder.Instance()}
 	def act(self, input):
 		input = formatInput(input)
 		data.polyOrder = float(input)
@@ -128,8 +129,8 @@ class PolyOrder(object):
 	def getDict(self):
 		#Should we accept 0? Right now we are.
 		# if it's zero, don't ask for inflow conditions.
-		return {"( )*0( )*": InflowCondVy.Instance(),
-			"( )*\d+( )*": InflowCond.Instance()}
+		return {"0( )*0( )*": InflowCondVy.Instance(),
+			"1( )*\d+( )*": InflowCond.Instance()}
 	def act(self, input):
 		input = formatInput(input)
 		data.inflowCond = float(input)
@@ -143,40 +144,40 @@ class InflowCond(object):
 		return ("For inflow condition " + str(data.inflowsAskedFor + 1) + ", what region of space? (E.g. \"x=0.5, y > 3\")")
 	def getDict(self):
 		#add spatial filter stuff
-		return {"( )*x( )*=( )*([0-9]*\.[0-9]+|[0-9]+)( )*,( )*y( )*(>|<)( )*([0-9]*\.[0-9]+|[0-9]+( )*)": InflowCondSpace.Instance(),
-			"( )*x( )*(>|<)( )*([0-9]*\.[0-9]+|[0-9]+)( )*,( )*y( )*=( )*([0-9]*\.[0-9]+|[0-9]+)( )*": InflowCondSpace.Instance(),
-			"( )*y( )*=( )*([0-9]*\.[0-9]+|[0-9]+)( )*,( )*x( )*(>|<)( )*([0-9]*\.[0-9]+|[0-9]+)( )*": InflowCondSpace.Instance(),
-			"( )*y( )*(>|<)( )*([0-9]*\.[0-9]+|[0-9]+)( )*,( )*x( )*=( )*([0-9]*\.[0-9]+|[0-9]+( )*)": InflowCondSpace.Instance()}
+		return {"0( )*x( )*=( )*([0-9]*\.[0-9]+|[0-9]+)( )*,( )*y( )*(>|<)( )*([0-9]*\.[0-9]+|[0-9]+( )*)": InflowCondSpace.Instance(),
+			"1( )*x( )*(>|<)( )*([0-9]*\.[0-9]+|[0-9]+)( )*,( )*y( )*=( )*([0-9]*\.[0-9]+|[0-9]+)( )*": InflowCondSpace.Instance(),
+			"2( )*y( )*=( )*([0-9]*\.[0-9]+|[0-9]+)( )*,( )*x( )*(>|<)( )*([0-9]*\.[0-9]+|[0-9]+)( )*": InflowCondSpace.Instance(),
+			"3( )*y( )*(>|<)( )*([0-9]*\.[0-9]+|[0-9]+)( )*,( )*x( )*=( )*([0-9]*\.[0-9]+|[0-9]+( )*)": InflowCondSpace.Instance()}
 	def act(self, input):
 		input = formatInput(input)
+		inputData = re.split('=|<|>|,', input)
 		input = re.split('( )*([0-9]*\.[0-9]+|[0-9]+)( )*', input)
+		
 		if input[0] == 'x=':
-			spatial1 = SpatialFilter.matchingX(float(input[1]))
-			if input[3] == ',y>':
-				spatial2 = SpatialFilter.greaterThanY(float(input[4]))
-			elif input[3]== ',y<':
-				spatial2 = SpatialFilter.lessThanY(float(input[4]))
-			else:
-				print("this shouldn't happen")
+			spatial1 = SpatialFilter.matchingX(float(inputData[1]))
+			if input[4] == ',y>':
+				spatial2 = SpatialFilter.greaterThanY(float(inputData[3]))
+			elif input[4]== ',y<':
+				spatial2 = SpatialFilter.lessThanY(float(inputData[3]))
 		elif input[0] == 'x>':
-			spatial1 = SpatialFilter.greaterThanX(float(input[1]))
+			spatial1 = SpatialFilter.greaterThanX(float(inputData[1]))
 			#must be y=	
-			spatial2 = SpatialFilter.matchingY(float(input[4]))
+			spatial2 = SpatialFilter.matchingY(float(inputData[3]))
 		elif input[0] == 'x<':
-			spatial1 = SpatialFilter.lessThanX(float(input[1]))	
-			spatial2 = SpatialFilter.matchingY(float(input[4]))
+			spatial1 = SpatialFilter.lessThanX(float(inputData[1]))	
+			spatial2 = SpatialFilter.matchingY(float(inputData[3]))
 		elif input[0] == 'y=':
-			spatial1 = SpatialFilter.matchingY(float(input[1]))
-			if input[3]==',x>':
-				spatial2 = SpatialFilter.greaterThanX(float(input[4]))
-			elif input[3]==',x<':
-				spatial2 = SpatialFilter.lessThanX(float(input[4]))
+			spatial1 = SpatialFilter.matchingY(float(inputData[1]))
+			if input[4]==',x>':
+				spatial2 = SpatialFilter.greaterThanX(float(inputData[3]))
+			elif input[4]==',x<':
+				spatial2 = SpatialFilter.lessThanX(float(inputData[3]))
 		elif input[0] == 'y>':
-			spatial1 = SpatialFilter.greaterThanY(float(input[1]))
-			spatial2 = SpatialFilter.matchingX(float(input[4]))
+			spatial1 = SpatialFilter.greaterThanY(float(inputData[1]))
+			spatial2 = SpatialFilter.matchingX(float(inputData[3]))
 		elif input[0] == 'y<':
-			spatial1 = SpatialFilter.lessThanY(float(input[1]))
-			spatial2 = SpatialFilter.matchingX(float(input[4]))
+			spatial1 = SpatialFilter.lessThanY(float(inputData[1]))
+			spatial2 = SpatialFilter.matchingX(float(inputData[3]))
 		spatialFilter = spatial1 and spatial2
 		data.inflowSpatialFilters.append(spatialFilter)
 	def isAccept(self):
@@ -187,7 +188,7 @@ class InflowCondSpace(object):
 	def prompt(self):
 		return "For inflow condition " + str(data.inflowsAskedFor + 1) + ", what is the x component of the velocity?"
 	def getDict(self):
-		return {"[\d\.xy\*\+-/^ ]+": InflowCondVx.Instance()}
+		return {"0[\d\.xy\*\+-/^ ]+": InflowCondVx.Instance()}
 	def act(self, input):
 		input = formatInput(input)
 		function = (Parser.Parser.Instance()).parse(input)
@@ -202,9 +203,9 @@ class InflowCondVx(object):
 	def getDict(self):
 		#if there's no more to be asked for
 		if inflowsAskedFor == inflowCond - 1:
-			return {"[\d\.xy\*\+-/^ ]+": InflowCondVy.Instance()}
+			return {"0[\d\.xy\*\+-/^ ]+": InflowCondVy.Instance()}
 		else:
-			return {"[\d\.xy\*\+-/^ ]+": InflowCond.Instance()}
+			return {"1[\d\.xy\*\+-/^ ]+": InflowCond.Instance()}
 	def act(self, input):
 		data.inflowsAskedFor = data.inflowsAskedFor + 1
 		input = formatInput(input)
@@ -219,8 +220,8 @@ class InflowCondVy(object):
 	def prompt(self):
 		return "How many outflow conditions?"
 	def getDict(self):
-		return {"( )*0( )*": OutflowSpace.Instance(),
-			"( )*/d+( )*": OutflowCond.Instance()}
+		return {"0( )*0( )*": OutflowSpace.Instance(),
+			"1( )*/d+( )*": OutflowCond.Instance()}
 	def act(self, input):
 		input = formatInput(input)
 		data.outflowsAskedFor = 0
@@ -235,113 +236,52 @@ class OutflowCond(object):
 	def getDict(self):
 
 		if data.outflowsAskedFor == data.outflowCond - 1:
-			return {"( )*x( )*=( )*([0-9]*\.[0-9]+|[0-9]+)( )*,( )*y( )*(>|<)( )*([0-9]*\.[0-9]+|[0-9]+( )*)": OutflowSpace.Instance(),
-				"( )*x( )*(>|<)( )*([0-9]*\.[0-9]+|[0-9]+)( )*,( )*y( )*=( )*([0-9]*\.[0-9]+|[0-9]+)( )*": OutflowSpace.Instance(),
-				"( )*y( )*=( )*([0-9]*\.[0-9]+|[0-9]+)( )*,( )*x( )*(>|<)( )*([0-9]*\.[0-9]+|[0-9]+)( )*": OutflowSpace.Instance(),
-				"( )*y( )*(>|<)( )*([0-9]*\.[0-9]+|[0-9]+)( )*,( )*x( )*=( )*([0-9]*\.[0-9]+|[0-9]+( )*)": OutflowSpace.Instance()}
+			return {"0( )*x( )*=( )*([0-9]*\.[0-9]+|[0-9]+)( )*,( )*y( )*(>|<)( )*([0-9]*\.[0-9]+|[0-9]+( )*)": CreateAccept.Instance(),
+				"1( )*x( )*(>|<)( )*([0-9]*\.[0-9]+|[0-9]+)( )*,( )*y( )*=( )*([0-9]*\.[0-9]+|[0-9]+)( )*": CreateAccept.Instance(),
+				"2( )*y( )*=( )*([0-9]*\.[0-9]+|[0-9]+)( )*,( )*x( )*(>|<)( )*([0-9]*\.[0-9]+|[0-9]+)( )*": CreateAccept.Instance(),
+				"3( )*y( )*(>|<)( )*([0-9]*\.[0-9]+|[0-9]+)( )*,( )*x( )*=( )*([0-9]*\.[0-9]+|[0-9]+( )*)": CreateAccept.Instance()}
 		else:
-			return {"( )*x( )*=( )*([0-9]*\.[0-9]+|[0-9]+)( )*,( )*y( )*(>|<)( )*([0-9]*\.[0-9]+|[0-9]+( )*)": OutflowCond.Instance(),
-				"( )*x( )*(>|<)( )*([0-9]*\.[0-9]+|[0-9]+)( )*,( )*y( )*=( )*([0-9]*\.[0-9]+|[0-9]+)( )*": OutflowCond.Instance(),
-				"( )*y( )*=( )*([0-9]*\.[0-9]+|[0-9]+)( )*,( )*x( )*(>|<)( )*([0-9]*\.[0-9]+|[0-9]+)( )*": OutflowCond.Instance(),
-				"( )*y( )*(>|<)( )*([0-9]*\.[0-9]+|[0-9]+)( )*,( )*x( )*=( )*([0-9]*\.[0-9]+|[0-9]+( )*)": OutflowCond.Instance()}
+			return {"0( )*x( )*=( )*([0-9]*\.[0-9]+|[0-9]+)( )*,( )*y( )*(>|<)( )*([0-9]*\.[0-9]+|[0-9]+( )*)": OutflowCond.Instance(),
+				"1( )*x( )*(>|<)( )*([0-9]*\.[0-9]+|[0-9]+)( )*,( )*y( )*=( )*([0-9]*\.[0-9]+|[0-9]+)( )*": OutflowCond.Instance(),
+				"2( )*y( )*=( )*([0-9]*\.[0-9]+|[0-9]+)( )*,( )*x( )*(>|<)( )*([0-9]*\.[0-9]+|[0-9]+)( )*": OutflowCond.Instance(),
+				"3( )*y( )*(>|<)( )*([0-9]*\.[0-9]+|[0-9]+)( )*,( )*x( )*=( )*([0-9]*\.[0-9]+|[0-9]+( )*)": OutflowCond.Instance()}
 
 	def act(self, input):
 		data.outflowsAskedfor = data.outflowsAskedfor + 1
 		input = formatInput(input)
-		input = re.split('([0-9]*\.[0-9]+|[0-9]+)')
-		if input[0] == 'x=':
-			spatial1 = SpatialFilter.matchingX(float(input[1]))
-			if input[3]==',y>':
-				spatial2 = SpatialFilter.greaterThanY(float(input[4]))
-			elif input[3]== ',y<':
-				spatial2 = SpatialFilter.lessThanY(float(input[4]))
-		elif input[0] == 'x>':
-			spatial1 = SpatialFilter.greaterThanX(float(input[1]))
-			#must be y=	
-			spatial2 = SpatialFilter.matchingY(float(input[4]))
-		elif input[0] == 'x<':
-			spatial1 = SpatialFilter.lessThanX(float(input[1]))	
-			spatial2 = SpatialFilter.matchingY(float(input[4]))
-		elif input[0] == 'y=':
-			spatial1 = SpatialFilter.matchingY(float(input[1]))
-			if input[3]==',x>':
-				spatial2 = SpatialFilter.greaterThanX(float(input[4]))
-			elif input[3]==',x<':
-				spatial2 = SpatialFilter.lessThanX(float(input[4]))
-		elif input[0] == 'y>':
-			spatial1 = SpatialFilter.greaterThanY(float(input[1]))
-			spatial2 = SpatialFilter.matchingX(float(input[4]))
-		elif input[0] == 'y<':
-			spatial1 = SpatialFilter.lessThanY(float(input[1]))
-			spatial2 = SpatialFilter.matchingX(float(input[4]))
-		spatialFilter = spatial1 and spatial2
-		data.outflowSpatialFilters.append(spatialFilter)
-	def isAccept(self):
-		return False;
-
-@Singleton
-class OutflowSpace(object):
-	def prompt(self):
-		return "How many wall conditions?"
-	def getDict(self):
-		return {"( )*0( )*": InflowCondSpace.Instance(),
-			"( )*/d+( )*": WallCond.Instance()}
-	def act(self, input):
-		input = formatInput(input)
-		data.wallCond = int(input)
-		data.wallsAskedFor = 0
-	def isAccept(self):
-		return False;
-
-@Singleton
-class WallCond(object):
-	def prompt(self):
-		return "For wall condition" + str(data.wallsAskedFor + 1) + ", what region of space? (E.g. \"x=0.5, y > 3\")"
-	def getDict(self):
-		if data.wallsAskedFor == data.wallCond - 1:
-			return {"( )*x( )*=( )*([0-9]*\.[0-9]+|[0-9]+)( )*,( )*y( )*(>|<)( )*([0-9]*\.[0-9]+|[0-9]+( )*)": CreateAccept.Instance(),
-				"( )*x( )*(>|<)( )*([0-9]*\.[0-9]+|[0-9]+)( )*,( )*y( )*=( )*([0-9]*\.[0-9]+|[0-9]+)( )*": CreateAccept.Instance(),
-				"( )*y( )*=( )*([0-9]*\.[0-9]+|[0-9]+)( )*,( )*x( )*(>|<)( )*([0-9]*\.[0-9]+|[0-9]+)( )*": CreateAccept.Instance(),
-				"( )*y( )*(>|<)( )*([0-9]*\.[0-9]+|[0-9]+)( )*,( )*x( )*=( )*([0-9]*\.[0-9]+|[0-9]+( )*)": CreateAccept.Instance()}
-		else:
-			return {"( )*x( )*=( )*([0-9]*\.[0-9]+|[0-9]+)( )*,( )*y( )*(>|<)( )*([0-9]*\.[0-9]+|[0-9]+( )*)": WallCond.Instance(),
-				"( )*x( )*(>|<)( )*([0-9]*\.[0-9]+|[0-9]+)( )*,( )*y( )*=( )*([0-9]*\.[0-9]+|[0-9]+)( )*": WallCond.Instance(),
-				"( )*y( )*=( )*([0-9]*\.[0-9]+|[0-9]+)( )*,( )*x( )*(>|<)( )*([0-9]*\.[0-9]+|[0-9]+)( )*": WallCond.Instance(),
-				"( )*y( )*(>|<)( )*([0-9]*\.[0-9]+|[0-9]+)( )*,( )*x( )*=( )*([0-9]*\.[0-9]+|[0-9]+( )*)": WallCond.Instance()}
-	def act(self, input):
-		data.wallsAskedFor = data.wallsAskedFor + 1
+		inputData = re.split('=|<|>|,', input)
+		input = re.split('( )*([0-9]*\.[0-9]+|[0-9]+)( )*', input)
 		
-		input = formatInput(input)
-		input = re.split('([0-9]*\.[0-9]+|[0-9]+)')
 		if input[0] == 'x=':
-			spatial1 = SpatialFilter.matchingX(float(input[1]))
-			if input[3]== ',y>':
-				spatial2 = SpatialFilter.greaterThanY(float(input[4]))
-			elif input[3]== ',y<':
-				spatial2 = SpatialFilter.lessThanY(float(input[4]))
+			spatial1 = SpatialFilter.matchingX(float(inputData[1]))
+			if input[4] == ',y>':
+				spatial2 = SpatialFilter.greaterThanY(float(inputData[3]))
+			elif input[4]== ',y<':
+				spatial2 = SpatialFilter.lessThanY(float(inputData[3]))
 		elif input[0] == 'x>':
-			spatial1 = SpatialFilter.greaterThanX(float(input[1]))
+			spatial1 = SpatialFilter.greaterThanX(float(inputData[1]))
 			#must be y=	
-			spatial2 = SpatialFilter.matchingY(float(input[4]))
+			spatial2 = SpatialFilter.matchingY(float(inputData[3]))
 		elif input[0] == 'x<':
-			spatial1 = SpatialFilter.lessThanX(float(input[1]))	
-			spatial2 = SpatialFilter.matchingY(float(input[4]))
+			spatial1 = SpatialFilter.lessThanX(float(inputData[1]))	
+			spatial2 = SpatialFilter.matchingY(float(inputData[3]))
 		elif input[0] == 'y=':
-			spatial1 = SpatialFilter.matchingY(float(input[1]))
-			if input[3]==',x>':
-				spatial2 = SpatialFilter.greaterThanX(float(input[4]))
-			elif input[3]==',x<':
-				spatial2 = SpatialFilter.lessThanX(float(input[4]))
+			spatial1 = SpatialFilter.matchingY(float(inputData[1]))
+			if input[4]==',x>':
+				spatial2 = SpatialFilter.greaterThanX(float(inputData[3]))
+			elif input[4]==',x<':
+				spatial2 = SpatialFilter.lessThanX(float(inputData[3]))
 		elif input[0] == 'y>':
-			spatial1 = SpatialFilter.greaterThanY(float(input[1]))
-			spatial2 = SpatialFilter.matchingX(float(input[4]))
+			spatial1 = SpatialFilter.greaterThanY(float(inputData[1]))
+			spatial2 = SpatialFilter.matchingX(float(inputData[3]))
 		elif input[0] == 'y<':
-			spatial1 = SpatialFilter.lessThanY(float(input[1]))
-			spatial2 = SpatialFilter.matchingX(float(input[4]))
-		spatialFilter = spatial1 and spatial2
-		data.wallSpatialFilters.append(spatialFilter)
+			spatial1 = SpatialFilter.lessThanY(float(inputData[1]))
+			spatial2 = SpatialFilter.matchingX(float(inputData[3]))
+		data.outflowSpatialFilters.append(spatialFilter)
+
 	def isAccept(self):
 		return False;
+
 
 @Singleton
 class CreateAccept(object):
