@@ -416,7 +416,7 @@ def solveStokes():
 
 
 	spaceDim = 2
-	useConformingTraces = True
+	useConformingTraces = False
 	mu = 1.0
 	form = StokesVGPFormulation(spaceDim,useConformingTraces,mu)
 	dims = [data.xdim,data.ydim]
