@@ -1,4 +1,6 @@
 from ParserTests import *
+from PlotTests import *
+from RETest import *
 import unittest
 
 
