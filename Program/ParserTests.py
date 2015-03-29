@@ -55,9 +55,6 @@ class ParserTests(unittest.TestCase):
 		func = ParserTests.parser.parse("2^3")
 		self.assertEqual(func.evaluate(2), 8)
 
-                
-                func = ParserTests.parser.parse("3+)")
-
 if (__name__ == '__main__'):
   unittest.main()
 

@@ -17,7 +17,7 @@ class Create(object):
 	def prompt(self):
 		return "Before we solve, I need to ask you some setup questions. \nWould you like to solve Stokes or Navier-Stokes?"
 	def getDict(self):
-		return {'0( )*stokes( )*' : Stokes.Instance(),
+		return {'0( )*stokes( )*' : Reynolds.Instance(),
 			'1( )*navier-stokes( )*' : NavierStokes.Instance()}
 	#expected input "stokes" or "navier-stokes"
 	def act(self, input):
@@ -25,19 +25,6 @@ class Create(object):
 		data.stokesOrNS = input
 	def isAccept(self):
 		return False
-
-@Singleton
-class Stokes(object):
-	def prompt(self):
-		return "What Reynolds number?"
-	def getDict(self):
-		return {"0( )*\d+( )*": Reynolds.Instance()}
-	def act(self, input):
-		input = formatInput(input)
-		data.reynolds = float(input)
-	def isAccept(self):
-		return False;
-
 @Singleton
 class NavierStokes(object):
 	def prompt(self):
@@ -320,7 +307,7 @@ def solveNavier():
 	#assume 1 inflow and outflow condition. Ideally this wouldn't be
 
 	inflowVelocity = Function.vectorize(data.inflowXVelocity[0], data.inflowYVelocity[0])
-	form.addInflowCondition(data.inflowSpatialFilters[0],data.inflowVelocity)
+	form.addInflowCondition(data.inflowSpatialFilters[0],inflowVelocity)
 	form.addOutflowCondition(data.outflowSpatialFilters[0])
 	wallBuilding = data.inflowSpatialFilters[0] or data.outflowSpatialFilters[0]
 
