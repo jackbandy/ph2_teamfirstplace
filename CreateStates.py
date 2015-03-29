@@ -7,14 +7,13 @@ data = Data()
 
 #removes white space and makes lower case
 def formatInput(string):
-	inputString = inputString.lower()
-	return "".join(inputString.split())
+	inputString = string.lower()
+	return "".join(string.split())
 
 @Singleton
 class Create(object):
 	def prompt(self):
-		return """Before we solve, I need to ask you some setup questions.\n
-			Would you like to solve Stokes or Navier-Stokes?"""
+		return "Before we solve, I need to ask you some setup questions. \nWould you like to solve Stokes or Navier-Stokes?"
 	def getDict(self):
 		return {'( )*stokes( )*' : Stokes.Instance(),
 			'( )*navier-stokes( )*' : NavierStokes.Instance()}
@@ -30,7 +29,7 @@ class Stokes(object):
 	def prompt(self):
 		return "What Reynolds number?"
 	def getDict(self):
-		return {"( )*\d( )*": Reynolds.Instance()}
+		return {"( )*\d+( )*": Reynolds.Instance()}
 	def act(self, input):
 		input = formatInput(input)
 		data.reynolds = float(input)
@@ -42,7 +41,7 @@ class NavierStokes(object):
 	def prompt(self):
 		return "What Reynolds number?"
 	def getDict(self):
-		return {"( )*\d( )*": Reynolds.Instance()}
+		return {"( )*\d+( )*": Reynolds.Instance()}
 	def act(self, input):
 		input = formatInput(input)
 		data.reynolds = float(input)
@@ -54,7 +53,7 @@ class Reynolds(object):
 	def prompt(self):
 		return "Transient or steady state?"
 	def getDict(self):
-		return {"( )*transient( )*": Transient.Intance(),
+		return {"( )*transient( )*": Transient.Instance(),
 			"( )*steady( )*state( )*": SteadyState.Instance()}
 	def act(self, input):
 		input = formatInput(input)
@@ -130,7 +129,7 @@ class PolyOrder(object):
 		#Should we accept 0? Right now we are.
 		# if it's zero, don't ask for inflow conditions.
 		return {"( )*0( )*": InflowCondVy.Instance(),
-			"( )*/d+( )*": InflowCond.Instance()}
+			"( )*\d+( )*": InflowCond.Instance()}
 	def act(self, input):
 		input = formatInput(input)
 		data.inflowCond = float(input)
@@ -470,12 +469,6 @@ def solveStokes():
 
 
 	perCellError = form.solution().energyErrorPerCell()
-
-
-
-
-
-
 
 
 
