@@ -217,7 +217,10 @@ class InflowCondVy(object):
 		return "How many outflow conditions?"
 	def getDict(self):
 		return {"0( )*0( )*": CreateAccept.Instance(),
-			"1( )*/d+( )*": OutflowCond.Instance()}
+			"1( )*\d+( )*": OutflowCond.Instance()}
+
+
+
 	def act(self, input):
 		input = formatInput(input)
 		data.outflowsAskedFor = 0
