@@ -55,7 +55,7 @@ class Reynolds(object):
 		return "Transient or steady state?"
 	def getDict(self):
 		return {"0( )*transient( )*": Transient.Instance(),
-			"0( )*steady( )*state( )*": SteadyState.Instance()}
+			"1( )*steady( )*state( )*": SteadyState.Instance()}
 	def act(self, input):
 		input = formatInput(input)
 		#input should be "transient" or "steadystate"
@@ -111,11 +111,7 @@ class MeshElem(object):
 		return "What polynomial order? (1 to 9)"
 	def getDict(self):
 		#because we don't want to accept 0
-		return {"0( )*1( )*": PolyOrder.Instance(), "2( )*2( )*": PolyOrder.Instance(), 
-			"3( )*3( )*": PolyOrder.Instance(), "4( )*4( )*": PolyOrder.Instance(), 
-			"5( )*5( )*": PolyOrder.Instance(), "6( )*6( )*": PolyOrder.Instance(), 
-			"7( )*7( )*": PolyOrder.Instance(), "8( )*8( )*": PolyOrder.Instance(),
-			"9( )*9( )*": PolyOrder.Instance()}
+		return {"0( )*[1-9]( )*": PolyOrder.Instance()}
 	def act(self, input):
 		input = formatInput(input)
 		data.polyOrder = float(input)
@@ -220,7 +216,7 @@ class InflowCondVy(object):
 	def prompt(self):
 		return "How many outflow conditions?"
 	def getDict(self):
-		return {"0( )*0( )*": OutflowSpace.Instance(),
+		return {"0( )*0( )*": CreateAccept.Instance(),
 			"1( )*/d+( )*": OutflowCond.Instance()}
 	def act(self, input):
 		input = formatInput(input)
@@ -289,7 +285,7 @@ class CreateAccept(object):
 		return ""
 	def getDict(self):
 		return {"": Phase2.Phase2.Instance()}
-	def act(self):
+	def act(self, input):
 		if data.stokesOrNS == 'stokes':
 			solveStokes()
 		elif data.stokesOrNS == 'navier-stokes':
@@ -410,6 +406,60 @@ def solveStokes():
 
 	perCellError = form.solution().energyErrorPerCell()
 
+
+def solveStokesTransient:
+
+	spaceDim = 2
+	useConformingTraces = False
+	mu = 1.0
+
+	dims = [data.xdim,data.ydim]
+	numElements = [data.xelem,data.yelem]
+	x0 = [0.,0.]
+		#polyorder
+	meshTopo = MeshFactory.rectilinearMeshTopology(dims,numElements,x0)
+	delta_k = 1
+
+	transient = True
+	dt = 0.1
+	totalTime = 2.0
+	numTimeSteps = int(totalTime / dt)
+	transientForm = StokesVGPFormulation(spaceDim,useConformingTraces,mu,transient,dt)
+
+	timeRamp = TimeRamp.timeRamp(transientForm.getTimeFunction(),1.0)
+
+	transientForm.initializeSolution(meshTopo,data.polyOrder,delta_k)
+
+	transientForm.addZeroMeanPressureCondition()
+
+
+
+	inflowVelocity = Function.vectorize(data.inflowXVelocity[0], data.inflowYVelocity[0])
+	transientForm.addInflowCondition(data.inflowSpatialFilters[0],data.inflowVelocity)
+	transientForm.addOutflowCondition(data.outflowSpatialFilters[0])
+	wallBuilding = data.inflowSpatialFilters[0] or data.outflowSpatialFilters[0]
+
+	for i in range(1, data.inflowCond):
+		wallBuilding = wallBuilding or data.inflowSpatialFilters[i]
+		inflowVelocity = Function.vectorize(data.inflowXVelocity[i], data.inflowYVelocity[i])
+		transientForm.addInflowCondition(data.inflowSpatialFilters[i], inflowVelocity)
+
+	for i in range(1, data.outflowcond):
+		transientForm.addOutflowCondition(data.outflowSpatialFilters[i])
+		wallBuilding = wallBuilding or data.outflowSpatialFilters[i]
+
+	wall = SpatialFilter.negatedFilter(wallBuilding)
+	transientForm.addWallCondition(wall)
+
+
+
+	transientExporter = HDF5Exporter(transientForm.solution().mesh(), "transientStokes", ".")
+
+	for timeStepNumber in range(numTimeSteps):
+		transientForm.solve()
+		transientExporter.exportSolution(transientForm.solution(),transientForm.getTime())
+		transientForm.takeTimeStep()
+		print("Time step %i completed" % timeStepNumber)
 
 
 
