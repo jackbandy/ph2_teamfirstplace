@@ -32,8 +32,6 @@ class Data(object):
 	outflowSpatialFilters = collections.deque()
 	outflowXVelocity = collections.deque()
 	outflowYVelocity = collections.deque()
-	wallCond = -1
-	wallSpatialFilters = collections.deque()
 	mesh = ''
 	solution = ''
 

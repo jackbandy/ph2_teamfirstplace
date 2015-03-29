@@ -3,12 +3,14 @@ a) Refine
    2)make refinements to those
    3)solve again
    4)compare results with what they should be with the refinement
+
 b) Save and Load (I don't know how to do these separately)
    1)create a mesh and a solution (can use TestData.py to set Data.py)
    2)save them
    3)make changes to the mesh and solution or make a new one
    4)load the first mesh and solution and make sure they match the first
 	(Can also compare data in Data.py)
+
 c) Plot
    1) Per Dr. Roberts, "a small driver that generates samples of each plot type"
 	("manually look at to see that it looks good")
@@ -20,3 +22,8 @@ c) Plot
 	mesh
 	error
 
+d) Program
+   1) Not much of a way to test outside of running the program itself
+
+e) Create
+   1) Wrapped up necessarily in the program itself as well (run through CamelliaSolver.py)
