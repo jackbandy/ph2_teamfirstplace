@@ -8,7 +8,7 @@ import SaveStates
 import RefineStates
 import PlotStates
 import LoadStates
-#import CreateStates
+import CreateStates
 
 
 @Singleton
@@ -18,7 +18,7 @@ class Phase1(object):
         return "Your options now are: create, load, and exit."
         
     def getDict(self):
-        return { #"create" : CreateStates.Create.Instance(),
+        return { "create" : CreateStates.Create.Instance(),
                  "load" : LoadStates.Load.Instance(),
                  "exit": ExitStates.Exit.Instance() }
 
@@ -36,11 +36,11 @@ class Phase2(object):
         return "Your options now are: create, load, save, refine, plot, or exit."
         
     def getDict(self):
-        return { #"create" : CreateStates.Create.Instance(), 
+        return { "create" : CreateStates.Create.Instance(), 
                  "load" : LoadStates.Load.Instance(),
                  "save" : SaveStates.Save.Instance(),
                  "refine" : RefineStates.Refine.Instance(),
-                 #"plot" : PlotStates.Plot.Instance(),
+                 "plot" : PlotStates.Plot.Instance(),
                  "exit" : ExitStates.Exit.Instance() }
 
     def act(self, input):

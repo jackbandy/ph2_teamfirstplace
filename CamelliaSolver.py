@@ -1,7 +1,3 @@
-from PyCamellia import *
-import PyCamellia
+import Driver
 
-def main():
-    """Here. We. Go."""
-    pass
-    #this statement does nothing
+Driver.main()

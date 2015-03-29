@@ -51,21 +51,22 @@ def processInput(state, input):
 
 
 # public static void main(String[] args):
-print "Welcome to the Incompressible Flow Solver!"
-state = PhaseStates.Phase1.Instance()
-startState = state
-while True:
-    print state.prompt()
-    if state is PhaseStates.Phase2.Instance():
-        startState = state
-
-
-    if not state.isAccept():
-        state = processInput(state, raw_input(">> "))
-    else:
-        try:
-            state.act("")
-            state = state.getDict()[""]
-        except IOError:
-            print 'There was an error saving or loading the file'
-            state = startState
+def main():
+    print "Welcome to the Incompressible Flow Solver!"
+    state = PhaseStates.Phase1.Instance()
+    startState = state
+    while True:
+        print state.prompt()
+        if state is PhaseStates.Phase2.Instance():
+            startState = state
+            
+            
+        if not state.isAccept():
+            state = processInput(state, raw_input(">> ").lower())
+        else:
+            try:
+                state.act("")
+                state = state.getDict()[""]
+            except IOError:
+                print 'There was an error saving or loading the file'
+                state = startState
