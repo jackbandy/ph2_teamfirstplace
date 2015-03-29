@@ -31,35 +31,6 @@ class PromptPlot(object):
 	#td = TestData.TestData()
 	#td.setData()
 	form = Data.Data().form
-#        dims = [2.0,2.0]
-#        numElements = [4,5]
-#        x0 = [0.,0.]
-#        meshTopo = MeshFactory.rectilinearMeshTopology(dims,numElements,x0)
-#        polyOrder = 3
-#        delta_k = 1
-#       
-#        form.initializeSolution(meshTopo,polyOrder,delta_k)
-#       
-#        form.addZeroMeanPressureCondition()
-#       
-#        topBoundary = SpatialFilter.matchingY(1.0)
-#        notTopBoundary = SpatialFilter.negatedFilter(topBoundary)
-#       
-#        x = Function.xn(1)
-#        rampWidth = 1./64
-#        H_left = Function.heaviside(rampWidth)
-#        H_right = Function.heaviside(1.0-rampWidth);
-#        ramp = (1-H_right) * H_left + (1./rampWidth) * (1-H_left) * x + (1./rampWidth) * H_right * (1-x)
-#       
-#        zero = Function.constant(0)
-#        topVelocity = Function.vectorize(ramp,zero)
-#       
-#        form.addWallCondition(notTopBoundary)
-#        form.addInflowCondition(topBoundary,topVelocity)
-#       
-#        refinementNumber = 0
-#        form.solve()
-
 
         if input is "u1":
 	  plotType = 'u1'
@@ -84,7 +55,7 @@ class PromptPlot(object):
 	  plotType = 'Mesh'
 	  self.plotmesh()
         if input is "error":
-	  if (data.stokesOrNS is 'stokes'):
+	  if (Data.Data.stokesOrNS is 'stokes'):
 	    plotType = 'Stokes Error'
 	    cellerrs = form.solution().energyErrorPerCell()
 	    self.ploterror()
@@ -156,8 +127,6 @@ class PromptPlot(object):
         activeCellIDs = mesh.getActiveCellIDs()
         for cellID in activeCellIDs:
           goodv = mesh.verticesForCell(cellID)
-          for val in values:
-            totColor += val
           for point in goodv:
             xpoints.append(point[0])
             ypoints.append(point[1])
@@ -180,7 +149,8 @@ class PromptPlot(object):
 	xpoints = []
 	ypoints = []
 	zvalues = []
-	cellerrs = form.solution().energyErrorPerCell()
+	cellerrs = Data.Data.form.solution().energyErrorPerCell()
+	mesh = Data.Data().form.solution().mesh()
 	
 	for cellID in cellerrs.keys():
 	  goodv = array(mesh.verticesForCell(cellID))
