@@ -3,7 +3,6 @@ from PyCamellia import *
 
 class TestData(object):
     def setData(self):
-	Data.Data.form = StokesVGPFormulation(Data.Data.spaceDim,Data.Data.useConformingTraces,Data.Data.mu)
 	Data.Data.createOrLoad = 'create'
 	Data.Data.stokesOrNS = 'stokes'
 	Data.Data.reynolds = 800
@@ -28,3 +27,4 @@ class TestData(object):
 	Data.Data.horp = 'h'
 	Data.Data.aorm = 'auto'
 	Data.Data.manualElems = ''
+	Data.Data.form = StokesVGPFormulation(Data.Data.spaceDim,Data.Data.useConformingTraces,Data.Data.mu)
