@@ -198,7 +198,7 @@ class InflowCondVx(object):
 		return "For inflow condition " + str(data.inflowsAskedFor + 1) + ", what is the y component of the velocity?"
 	def getDict(self):
 		#if there's no more to be asked for
-		if inflowsAskedFor == inflowCond - 1:
+		if data.inflowsAskedFor == data.inflowCond - 1:
 			return {"0[\d\.xy\*\+-/^ ]+": InflowCondVy.Instance()}
 		else:
 			return {"1[\d\.xy\*\+-/^ ]+": InflowCond.Instance()}
@@ -407,7 +407,7 @@ def solveStokes():
 	perCellError = form.solution().energyErrorPerCell()
 
 
-def solveStokesTransient:
+def solveStokesTransient():
 
 	spaceDim = 2
 	useConformingTraces = False
