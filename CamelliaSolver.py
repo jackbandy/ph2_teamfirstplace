@@ -1,7 +1,4 @@
-from PyCamellia import *
-import PyCamellia
-
-
+import Driver
 
 
 def main():
@@ -18,3 +15,6 @@ def main():
 	
     pass
     #this statement does nothing
+
+Driver.main()
+
