@@ -28,9 +28,14 @@ def chopInput(input):
 # If it is, call act() on the state and move on to the next state
 def processInput(state, input):
     qu = chopInput(input)
+    if input == "exit" or input == "quit":
+        return ExitStates.Exit.Instance()
+    newList = list()
     dict = state.getDict()
+    for x in dict:
+        newList.insert(int(x[0]) , x[1:])
     try:
-        for key in dict:
+        for key in newList:
             q = copy.copy(qu)
             m = re.compile(key)
             while not (len(q) == 0):
@@ -38,8 +43,8 @@ def processInput(state, input):
                 ret = m.match(curr[0])
                 if ret != None and curr[0] == ret.group() and curr[0] != "":
                     state.act(curr[0])
-                    state = dict[key]
-                    if not((len(q) == 0) or state.isAccept()):
+                    state = dict[str(newList.index(key)) + key]
+                    if not((curr[1] == "") or state.isAccept()):
                         state = processInput(state, curr[1])
                     return state
     except Data.ParseException:
@@ -52,17 +57,18 @@ def processInput(state, input):
 
 # public static void main(String[] args):
 def main():
-    print "Welcome to the Incompressible Flow Solver!"
+    print "\n\n-------Welcome to the Incompressible Flow Solver-------"
+    print "---To exit at any time, simply type 'quit' or 'exit'---\n"
     state = PhaseStates.Phase1.Instance()
     startState = state
     while True:
-        print state.prompt()
-        if state is PhaseStates.Phase2.Instance():
-            startState = state
-            
-            
+
         if not state.isAccept():
+            print state.prompt()
+            if state is PhaseStates.Phase2.Instance():
+                startState = state
             state = processInput(state, raw_input(">> ").lower())
+
         else:
             try:
                 state.act("")
