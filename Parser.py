@@ -157,13 +157,6 @@ class StateMachine(object):
 #    inputString = "".join(inputString.split())
 #    inputString = re.split('([0-9]*\.[0-9]+|[0-9]+|[a-z]+|\(|\))',inputString)
     
-
-
-
-
-
-
-
     functionPtrArrayAndOps = self.makeFunctionPtrs(inputString)
     for i in range(0, len(functionPtrArrayAndOps)):
       self.readElement(functionPtrArrayAndOps[i])  
@@ -172,6 +165,14 @@ class StateMachine(object):
     # First make everything in the string into a functionPtr
       inputString = inputString.lower()
       inputString = "".join(inputString.split())
+      
+
+      #checkVars = re.split('[a-w]|z', inputString)
+      #if checkVars != inputString:
+      #  print("Only variables accepted are x and y")
+      #  raise Data.ParseException()
+
+
       #note that inputString is no longer a string technically. It is an array of strings
       inputString = re.split('([0-9]*\.[0-9]+|[0-9]+|[a-z]+|\(|\))',inputString)
       #remove blank elements
@@ -226,9 +227,9 @@ class Parser(object):
 
   def parse(self, inputString):
     stateMachine = StateMachine()
-    try:
-      stateMachine.readString(inputString)
-      value = stateMachine.value()
-      return value
-    except:
-      raise Data.ParseException
+    #try:
+    stateMachine.readString(inputString)
+    value = stateMachine.value()
+    return value
+    #except:
+     # raise Data.ParseException

@@ -36,9 +36,6 @@ class ParserTests(unittest.TestCase):
 	def testParseWithUpperCase(self):
 		func = ParserTests.parser.parse("X")
 		self.assertEqual(func.evaluate(2), 2)
-	def testParseWithTwoVars(self):
-		func = ParserTests.parser.parse("x + y")
-		self.assertEqual(func.evaluate(2,3), 5)
 	def testParseWithJustParen(self):
 		func = ParserTests.parser.parse("(3)")
 		self.assertEqual(func.evaluate(2,3), 3)
@@ -57,12 +54,7 @@ class ParserTests(unittest.TestCase):
 	def testParseWithExponent(self):
 		func = ParserTests.parser.parse("2^3")
 		self.assertEqual(func.evaluate(2), 8)
-	def testParseWithThreeVars(self):
-		func = ParserTests.parser.parse("x+y+z")
-		self.assertEqual(func, None)
-	def testParseWithDoubleExponents(self):
-		func = ParserTests.parser.parse("2^3.5")
-        def testParseWithUnbalancedParen(self):
+
                 
                 func = ParserTests.parser.parse("3+)")
 
