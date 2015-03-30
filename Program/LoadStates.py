@@ -3,6 +3,7 @@
 # Calls the load functions and then looks for the file to load
 
 from Singleton import *
+from PyCamellia import *
 import Data
 import PhaseStates
 import Memento
