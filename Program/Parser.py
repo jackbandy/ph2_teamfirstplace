@@ -1,3 +1,5 @@
+#Scott Wurtz
+
 from Singleton import *
 import re # regular expressions
 import atexit # allows graceful quit on Ctrl-D

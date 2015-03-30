@@ -1,3 +1,5 @@
+#Scott Wurtz
+
 from Singleton import *
 from PyCamellia import *
 from Data import *
