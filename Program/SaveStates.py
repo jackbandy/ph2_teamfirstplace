@@ -40,7 +40,7 @@ class SaveFile(object):
 		return dict
 
 	def act(self, entry):
-		Data.form.solution().save(Data.Data.saveFileName)
+		Data.Data.form.solution().save(Data.Data.saveFileName)
 		savedData = Memento.Memento().setMemento()
 		file = open(Data.Data.saveFileName, 'wb')
 		pickle.dump(savedData, file)

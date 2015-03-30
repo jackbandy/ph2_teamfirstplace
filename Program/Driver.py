@@ -48,6 +48,7 @@ def processInput(state, input):
                         state = processInput(state, curr[1])
                     return state
     except Data.ParseException:
+	print("\nSome common errors due to unsupported inputs: scientific notation (1e4) is not supported.\n Only one operator is allowed to be between two values. (E.g. 2(3+3) is not supported. Instead please enter 2*(3+3)")
         return state
     
     print 'Input \'' + input + '\' not understood'
