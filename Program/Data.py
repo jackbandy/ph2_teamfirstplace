@@ -4,7 +4,7 @@ import collections
 class Data(object):
 	#Initialization of form
 	spaceDim = 2
-	useConformingTraces = True
+	useConformingTraces = False
 	mu = 1.0
 	form = StokesVGPFormulation(spaceDim,useConformingTraces,mu)
 	delta_k = 1
