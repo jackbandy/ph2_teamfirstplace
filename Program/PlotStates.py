@@ -9,7 +9,8 @@ from numpy import *
 from PyCamellia import *
 import Data
 import TestData
-
+import PhaseStates
+import RobertsPlotter
 
 @Singleton
 class PromptPlot(object):
@@ -19,12 +20,12 @@ class PromptPlot(object):
         return "Options for plotting now are: u1, u2, p, stream, mesh, error"
 
     def getDict(self):
-        return  { "u1": Plotted.Instance(),
-                  "u2": Plotted.Instance(),
-                  "p": Plotted.Instance(),
-                  "stream": Plotted.Instance(),
-                  "mesh": Plotted.Instance(),
-                  "error": Plotted.Instance()
+        return  { "0u1": Plotted.Instance(),
+                  "1u2": Plotted.Instance(),
+                  "2p": Plotted.Instance(),
+                  "3stream": Plotted.Instance(),
+                  "4mesh": Plotted.Instance(),
+                  "5error": Plotted.Instance()
                 }
 
     def act(self, input):
@@ -32,29 +33,34 @@ class PromptPlot(object):
 	#td.setData()
 	form = Data.Data().form
 
-        if input is "u1":
+        print "input is: " + input
+        if input == "u1":
 	  plotType = 'u1'
 	  plt_soln = Function.solution(form.u(1),form.solution()) 
-	  self.plotstd(plt_soln)
-        if input is "u2":
+	  RobertsPlotter.plotFunction(plt_soln,form.solution().mesh(),input)
+# 	  self.plotstd(plt_soln)
+        if input == "u2":
 	  plotType = 'u2'
 	  plt_soln = Function.solution(form.u(2),form.solution()) 
-	  self.plotstd(plt_soln)
-        if input is "p": 
+	  RobertsPlotter.plotFunction(plt_soln,form.solution().mesh(),input)
+# 	  self.plotstd(plt_soln)
+        if input == "p": 
 	  plotType = 'p'
 	  plt_soln = Function.solution(form.p(),form.solution()) 
-	  self.plotstd(plt_soln)
-        if input is "stream":
+	  RobertsPlotter.plotFunction(plt_soln,form.solution().mesh(),input)
+#  	  self.plotstd(plt_soln)
+        if input == "stream":
 	  plotType = 'Sream'
 	  form.solve()
 	  stream = form.streamSolution()
 	  stream.solve()
 	  plt_soln = Function.solution(form.streamPhi(),stream) 
-	  self.plotstd(plt_soln)
-        if input is "mesh":
+	  RobertsPlotter.plotFunction(plt_soln,stream.mesh(),input)
+#	  self.plotstd(plt_soln)
+        if input == "mesh":
 	  plotType = 'Mesh'
 	  self.plotmesh()
-        if input is "error":
+        if input == "error":
 	  if (Data.Data.stokesOrNS is 'stokes'):
 	    plotType = 'Stokes Error'
 	    cellerrs = form.solution().energyErrorPerCell()
@@ -187,7 +193,7 @@ class Plotted:
         return 
 
     def getDict(self):
-        return { "": PhaseStates.Phase2.Instance() }
+        return { "0": PhaseStates.Phase2.Instance() }
 
     def act(self, input):
         return
