@@ -4,7 +4,7 @@
 
 from PyCamellia import *
 from Singleton import *
-import Data
+from Data import *
 import PhaseStates
 
 @Singleton
@@ -17,7 +17,7 @@ class Refine(object):
 		return "h or p refinement?"
 
 	def getDict(self):
-		dict = {"0h": HorP.Instance(), "p": HorP.Instance()}
+		dict = {"0h": HorP.Instance(), "1p": HorP.Instance()}
 		return dict
 
 	def act(self, entry):
@@ -57,7 +57,7 @@ class HorP(object):
 class AutoOrMan(object):
 
 	def isAccept(self):
-		return true
+		return True
 	
 	def prompt(self):
 		return ""
@@ -70,7 +70,6 @@ class AutoOrMan(object):
 		refinementNumber = 0
 		if (Data.horp == "h"):
 			if (Data.aorm == "auto"):
-				while energyError > threshold and refinementNumber <= 8:
   					Data.form.hRefine()
   					Data.form.solve()
   					energyError = Data.form.solution().energyErrorTotal()
@@ -80,7 +79,6 @@ class AutoOrMan(object):
   					print("Energy error after %i refinements: %0.3f" % (refinementNumber, energyError))
   					print("Mesh has %i elements and %i degrees of freedom." % (elementCount, globalDofCount))
 			elif (Data.aorm == "manual"):
-				while energyError > threshold and refinementNumber <= 8:
   					Data.form.hRefine(Data.manualElems)
   					Data.form.solve()
   					energyError = Data.form.solution().energyErrorTotal()
@@ -91,7 +89,6 @@ class AutoOrMan(object):
   					print("Mesh has %i elements and %i degrees of freedom." % (elementCount, globalDofCount))
 		elif (Data.horp == "p"):
 			if (Data.aorm == "auto"):
-				while energyError > threshold and refinementNumber <= 8:
   					Data.form.pRefine()
   					Data.form.solve()
   					energyError = Data.form.solution().energyErrorTotal()
@@ -101,7 +98,6 @@ class AutoOrMan(object):
   					print("Energy error after %i refinements: %0.3f" % (refinementNumber, energyError))
   					print("Mesh has %i elements and %i degrees of freedom." % (elementCount, globalDofCount))
 			elif (Data.aorm == "manual"):
-				while energyError > threshold and refinementNumber <= 8:
   					Data.form.pRefine(Data.manualElems)
   					Data.form.solve()
   					energyError = Data.form.solution().energyErrorTotal()
