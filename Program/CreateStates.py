@@ -7,8 +7,6 @@ import re
 import Parser
 import PhaseStates
 
-data = Data()
-
 #removes white space and makes lower case
 def formatInput(string):
 	inputString = string.lower()
@@ -24,7 +22,7 @@ class Create(object):
 	#expected input "stokes" or "navier-stokes"
 	def act(self, input):
                 input = formatInput(input)
-		data.stokesOrNS = input
+		Data.stokesOrNS = input
 	def isAccept(self):
 		return False
 @Singleton
@@ -35,7 +33,7 @@ class NavierStokes(object):
 		return {"0( )*\d+( )*": Reynolds.Instance()}
 	def act(self, input):
 		input = formatInput(input)
-		data.reynolds = float(input)
+		Data.reynolds = float(input)
 	def isAccept(self):
 		return False;
 
@@ -49,7 +47,7 @@ class Reynolds(object):
 	def act(self, input):
 		input = formatInput(input)
 		#input should be "transient" or "steadystate"
-		data.transientOrSS = input;
+		Data.transientOrSS = input;
 	def isAccept(self):
 		return False;
 
@@ -62,8 +60,8 @@ class SteadyState(object):
 	#expects input like "1.0 x 4.0"
 	def act(self, input):
 		input = formatInput(input)
-		data.xdim = float(input[0])
-		data.ydim = float(input[2])
+		Data.xdim = float(input[0])
+		Data.ydim = float(input[2])
 	def isAccept(self):
 		return False;
 
@@ -76,8 +74,8 @@ class Transient(object):
 	# input of format "2.0 x 5.0"
 	def act(self, input):
 		input = formatInput(input)
-		data.xdim = float(input[0])
-		data.ydim = float(input[2])
+		Data.xdim = float(input[0])
+		Data.ydim = float(input[2])
 	def isAccept(self):
 		return False;
 
@@ -90,8 +88,8 @@ class MeshDim(object):
 	#input of format "2 x 5"
 	def act(self, input):
 		input = formatInput(input)
-		data.xelem = int(input[0])
-		data.yelem = int(input[2])
+		Data.xelem = int(input[0])
+		Data.yelem = int(input[2])
 	def isAccept(self):
 		return False;
 
@@ -104,7 +102,7 @@ class MeshElem(object):
 		return {"0( )*[1-9]( )*": PolyOrder.Instance()}
 	def act(self, input):
 		input = formatInput(input)
-		data.polyOrder = int(input)
+		Data.polyOrder = int(input)
 	def isAccept(self):
 		return False;
 
@@ -116,15 +114,15 @@ class PolyOrder(object):
 		return {"0( )*[1-9]\d*( )*": InflowCond.Instance()}
 	def act(self, input):
 		input = formatInput(input)
-		data.inflowCond = int(input)
-		data.inflowsAskedFor = 0
+		Data.inflowCond = int(input)
+		Data.inflowsAskedFor = 0
 	def isAccept(self):
 		return False;
 
 @Singleton
 class InflowCond(object):
 	def prompt(self):
-		return ("For inflow condition " + str(data.inflowsAskedFor + 1) + ", what region of space? (E.g. \"x=0.5, y > 3\")")
+		return ("For inflow condition " + str(Data.inflowsAskedFor + 1) + ", what region of space? (E.g. \"x=0.5, y > 3\")")
 	def getDict(self):
 		#add spatial filter stuff
 		return {"0( )*x( )*=( )*([0-9]*\.[0-9]+|[0-9]+)( )*,( )*y( )*(>|<)( )*([0-9]*\.[0-9]+|[0-9]+( )*)": InflowCondSpace.Instance(),
@@ -161,39 +159,39 @@ class InflowCond(object):
 		elif input[0] == 'y<':
 			spatial1 = SpatialFilter.lessThanY(float(inputData[1]))
 			spatial2 = SpatialFilter.matchingX(float(inputData[3]))
-		spatialFilter = spatial1 and spatial2
-		data.inflowSpatialFilters.append(spatialFilter)
+		spatialFilter = spatial1 & spatial2
+		Data.inflowSpatialFilters.append(spatialFilter)
 	def isAccept(self):
 		return False;
 
 @Singleton
 class InflowCondSpace(object):
 	def prompt(self):
-		return "For inflow condition " + str(data.inflowsAskedFor + 1) + ", what is the x component of the velocity?"
+		return "For inflow condition " + str(Data.inflowsAskedFor + 1) + ", what is the x component of the velocity?"
 	def getDict(self):
-		return {"0[\d\.xy\*\+-/^ ]+": InflowCondVx.Instance()}
+		return {"0[\d\.xy\*\+-/^\(\) ]+": InflowCondVx.Instance()}
 	def act(self, input):
 		input = formatInput(input)
 		function = (Parser.Parser.Instance()).parse(input)
-		data.inflowXVelocity.append(function)
+		Data.inflowXVelocity.append(function)
 	def isAccept(self):
 		return False;
 
 @Singleton
 class InflowCondVx(object):
 	def prompt(self):
-		return "For inflow condition " + str(data.inflowsAskedFor + 1) + ", what is the y component of the velocity?"
+		return "For inflow condition " + str(Data.inflowsAskedFor + 1) + ", what is the y component of the velocity?"
 	def getDict(self):
 		#if there's no more to be asked for
-		if data.inflowsAskedFor == data.inflowCond - 1:
-			return {"0[\d\.xy\*\+-/^ ]+": InflowCondVy.Instance()}
+		if Data.inflowsAskedFor == Data.inflowCond - 1:
+			return {"0[\d\.xy\*\+-/^\(\) ]+": InflowCondVy.Instance()}
 		else:
-			return {"0[\d\.xy\*\+-/^ ]+": InflowCond.Instance()}
+			return {"0[\d\.xy\*\+-/^\(\) ]+": InflowCond.Instance()}
 	def act(self, input):
-		data.inflowsAskedFor = data.inflowsAskedFor + 1
+		Data.inflowsAskedFor = Data.inflowsAskedFor + 1
 		input = formatInput(input)
 		function = (Parser.Parser.Instance()).parse(input)
-		data.inflowYVelocity.append(function)
+		Data.inflowYVelocity.append(function)
 	def isAccept(self):
 		return False;
 
@@ -209,18 +207,18 @@ class InflowCondVy(object):
 
 	def act(self, input):
 		input = formatInput(input)
-		data.outflowsAskedFor = 0
-		data.outflowCond = int(input)
+		Data.outflowsAskedFor = 0
+		Data.outflowCond = int(input)
 	def isAccept(self):
 		return False;
 
 @Singleton
 class OutflowCond(object):
 	def prompt(self):
-		return "For outflow condition " + str(data.outflowsAskedFor + 1) + ", what region of space? (E.g. \"x=0.5, y > 3\")"
+		return "For outflow condition " + str(Data.outflowsAskedFor + 1) + ", what region of space? (E.g. \"x=0.5, y > 3\")"
 	def getDict(self):
 
-		if data.outflowsAskedFor == data.outflowCond - 1:
+		if Data.outflowsAskedFor == Data.outflowCond - 1:
 			return {"0( )*x( )*=( )*([0-9]*\.[0-9]+|[0-9]+)( )*,( )*y( )*(>|<)( )*([0-9]*\.[0-9]+|[0-9]+( )*)": CreateAccept.Instance(),
 				"1( )*x( )*(>|<)( )*([0-9]*\.[0-9]+|[0-9]+)( )*,( )*y( )*=( )*([0-9]*\.[0-9]+|[0-9]+)( )*": CreateAccept.Instance(),
 				"2( )*y( )*=( )*([0-9]*\.[0-9]+|[0-9]+)( )*,( )*x( )*(>|<)( )*([0-9]*\.[0-9]+|[0-9]+)( )*": CreateAccept.Instance(),
@@ -232,7 +230,7 @@ class OutflowCond(object):
 				"3( )*y( )*(>|<)( )*([0-9]*\.[0-9]+|[0-9]+)( )*,( )*x( )*=( )*([0-9]*\.[0-9]+|[0-9]+( )*)": OutflowCond.Instance()}
 
 	def act(self, input):
-		data.outflowsAskedFor = data.outflowsAskedFor + 1
+		Data.outflowsAskedFor = Data.outflowsAskedFor + 1
 		input = formatInput(input)
 		inputData = re.split('=|<|>|,', input)
 		input = re.split('( )*([0-9]*\.[0-9]+|[0-9]+)( )*', input)
@@ -262,8 +260,8 @@ class OutflowCond(object):
 		elif input[0] == 'y<':
 			spatial1 = SpatialFilter.lessThanY(float(inputData[1]))
 			spatial2 = SpatialFilter.matchingX(float(inputData[3]))
-		spatialFilter = spatial1 and spatial2
-		data.outflowSpatialFilters.append(spatialFilter)
+		spatialFilter = spatial1 & spatial2
+		Data.outflowSpatialFilters.append(spatialFilter)
 
 	def isAccept(self):
 		return False;
@@ -276,12 +274,12 @@ class CreateAccept(object):
 	def getDict(self):
 		return {"": PhaseStates.Phase2.Instance()}
 	def act(self, input):
-		if data.stokesOrNS == 'stokes' and data.transientOrSS=='steadystate':
-			data.form = solveStokes()
-		elif data.stokesOrNS == 'stokes' and data.transientOrSS=='transient':
-			data.form = solveStokesTransient()
-		elif data.stokesOrNS == 'navier-stokes':
-			data.form = solveNavier()
+		if Data.stokesOrNS == 'stokes' and Data.transientOrSS=='steadystate':
+			Data.form = solveStokes()
+		elif Data.stokesOrNS == 'stokes' and Data.transientOrSS=='transient':
+			Data.form = solveStokesTransient()
+		elif Data.stokesOrNS == 'navier-stokes':
+			Data.form = solveNavier()
 
 	def isAccept(self):
 		return True
@@ -290,33 +288,33 @@ class CreateAccept(object):
 
 def solveNavier():
 	spaceDim = 2
-	Re = data.reynolds
-	dims = [data.xdim,data.ydim]
-	numElements = [int(data.xelem),int(data.yelem)]
+	Re = Data.reynolds
+	dims = [Data.xdim,Data.ydim]
+	numElements = [int(Data.xelem),int(Data.yelem)]
 	x0 = [0.,0.]
 	meshTopo = MeshFactory.rectilinearMeshTopology(dims,numElements,x0)
 	#polyOrder
 	delta_k = 1
 
-	form = NavierStokesVGPFormulation(meshTopo,Re,data.polyOrder,delta_k)
+	form = NavierStokesVGPFormulation(meshTopo,Re,Data.polyOrder,delta_k)
 
 	form.addZeroMeanPressureCondition()
 
 	#assume 1 inflow and outflow condition. Ideally this wouldn't be
 
-	inflowVelocity = Function.vectorize(data.inflowXVelocity[0], data.inflowYVelocity[0])
-	form.addInflowCondition(data.inflowSpatialFilters[0],inflowVelocity)
-	form.addOutflowCondition(data.outflowSpatialFilters[0])
-	wallBuilding = data.inflowSpatialFilters[0] or data.outflowSpatialFilters[0]
+	inflowVelocity = Function.vectorize(Data.inflowXVelocity[0], Data.inflowYVelocity[0])
+	form.addInflowCondition(Data.inflowSpatialFilters[0],inflowVelocity)
+	form.addOutflowCondition(Data.outflowSpatialFilters[0])
+	wallBuilding = Data.inflowSpatialFilters[0] | Data.outflowSpatialFilters[0]
 
-	for i in range(1, data.inflowCond):
-		wallBuilding = wallBuilding or data.inflowSpatialFilters[i]
-		inflowVelocity = Function.vectorize(data.inflowXVelocity[i], data.inflowYVelocity[i])
-		form.addInflowCondition(data.inflowSpatialFilters[i], inflowVelocity)
+	for i in range(1, Data.inflowCond):
+		wallBuilding = wallBuilding | Data.inflowSpatialFilters[i]
+		inflowVelocity = Function.vectorize(Data.inflowXVelocity[i], Data.inflowYVelocity[i])
+		form.addInflowCondition(Data.inflowSpatialFilters[i], inflowVelocity)
 
-	for i in range(1, data.outflowCond):
-		form.addOutflowCondition(data.outflowSpatialFilters[i])
-		wallBuilding = wallBuilding or data.outflowSpatialFilters[i]
+	for i in range(1, Data.outflowCond):
+		form.addOutflowCondition(Data.outflowSpatialFilters[i])
+		wallBuilding = wallBuilding | Data.outflowSpatialFilters[i]
 
 	wall = SpatialFilter.negatedFilter(wallBuilding)
 	form.addWallCondition(wall)
@@ -346,29 +344,30 @@ def solveStokes():
 	useConformingTraces = False
 	mu = 1.0
 	form = StokesVGPFormulation(spaceDim,useConformingTraces,mu)
-	dims = [data.xdim,data.ydim]
-	numElements = [int(data.xelem),int(data.yelem)]
+	dims = [Data.xdim,Data.ydim]
+	numElements = [int(Data.xelem),int(Data.yelem)]
 	x0 = [0.,0.]
+	print "About to create mesh with dims " + str(dims) + " and elements " + str(numElements)
 	#polyorder
 	meshTopo = MeshFactory.rectilinearMeshTopology(dims,numElements,x0)
 	delta_k = 1
 
-	form.initializeSolution(meshTopo,data.polyOrder,delta_k)
+	form.initializeSolution(meshTopo,Data.polyOrder,delta_k)
 	form.addZeroMeanPressureCondition()
 
-	inflowVelocity = Function.vectorize(data.inflowXVelocity[0], data.inflowYVelocity[0])
-	form.addInflowCondition(data.inflowSpatialFilters[0],inflowVelocity)
-	form.addOutflowCondition(data.outflowSpatialFilters[0])
-	wallBuilding = data.inflowSpatialFilters[0] or data.outflowSpatialFilters[0]
+	inflowVelocity = Function.vectorize(Data.inflowXVelocity[0], Data.inflowYVelocity[0])
+	form.addInflowCondition(Data.inflowSpatialFilters[0],inflowVelocity)
+	form.addOutflowCondition(Data.outflowSpatialFilters[0])
+	wallBuilding = Data.inflowSpatialFilters[0] | Data.outflowSpatialFilters[0]
 
-	for i in range(1, data.inflowCond):
-		wallBuilding = wallBuilding or data.inflowSpatialFilters[i]
-		inflowVelocity = Function.vectorize(data.inflowXVelocity[i], data.inflowYVelocity[i])
-		form.addInflowCondition(data.inflowSpatialFilters[i], inflowVelocity)
+	for i in range(1, Data.inflowCond):
+		wallBuilding = wallBuilding | Data.inflowSpatialFilters[i]
+		inflowVelocity = Function.vectorize(Data.inflowXVelocity[i], Data.inflowYVelocity[i])
+		form.addInflowCondition(Data.inflowSpatialFilters[i], inflowVelocity)
 
-	for i in range(1, data.outflowCond):
-		form.addOutflowCondition(data.outflowSpatialFilters[i])
-		wallBuilding = wallBuilding or data.outflowSpatialFilters[i]
+	for i in range(1, Data.outflowCond):
+		form.addOutflowCondition(Data.outflowSpatialFilters[i])
+		wallBuilding = wallBuilding | Data.outflowSpatialFilters[i]
 
 	wall = SpatialFilter.negatedFilter(wallBuilding)
 	form.addWallCondition(wall)
@@ -384,30 +383,17 @@ def solveStokes():
 	print("Energy error after %i refinements: %0.3f" % (refinementNumber, energyError))
 	threshold = .05
 
-
-	while refinementNumber <= 10:
-		form.hRefine()
-		form.solve()
-		energyError = form.solution().energyErrorTotal()
-		refinementNumber += 1
-		elementCount = mesh.numActiveElements()
-		globalDofCount = mesh.numGlobalDofs()
-		print("Energy error after %i refinements: %0.3f" % (refinementNumber, energyError))
-		print("Mesh has %i elements and %i degrees of freedom." % (elementCount, globalDofCount))
-
-
 	perCellError = form.solution().energyErrorPerCell()
 	return form
 
 
 def solveStokesTransient():
-
 	spaceDim = 2
 	useConformingTraces = False
 	mu = 1.0
 
-	dims = [data.xdim,data.ydim]
-	numElements = [int(data.xelem),int(data.yelem)]
+	dims = [Data.xdim,Data.ydim]
+	numElements = [int(Data.xelem),int(Data.yelem)]
 	x0 = [0.,0.]
 		#polyorder
 	meshTopo = MeshFactory.rectilinearMeshTopology(dims,numElements,x0)
@@ -421,25 +407,25 @@ def solveStokesTransient():
 
 	timeRamp = TimeRamp.timeRamp(transientForm.getTimeFunction(),1.0)
 
-	transientForm.initializeSolution(meshTopo,int(data.polyOrder),delta_k)
+	transientForm.initializeSolution(meshTopo,int(Data.polyOrder),delta_k)
 
 	transientForm.addZeroMeanPressureCondition()
 
 
 
-	inflowVelocity = Function.vectorize(data.inflowXVelocity[0], data.inflowYVelocity[0])
-	transientForm.addInflowCondition(data.inflowSpatialFilters[0],inflowVelocity)
-	transientForm.addOutflowCondition(data.outflowSpatialFilters[0])
-	wallBuilding = data.inflowSpatialFilters[0] or data.outflowSpatialFilters[0]
+	inflowVelocity = Function.vectorize(Data.inflowXVelocity[0], Data.inflowYVelocity[0])
+	transientForm.addInflowCondition(Data.inflowSpatialFilters[0],inflowVelocity)
+	transientForm.addOutflowCondition(Data.outflowSpatialFilters[0])
+	wallBuilding = Data.inflowSpatialFilters[0] | Data.outflowSpatialFilters[0]
 
-	for i in range(1, data.inflowCond):
-		wallBuilding = wallBuilding or data.inflowSpatialFilters[i]
-		inflowVelocity = Function.vectorize(data.inflowXVelocity[i], data.inflowYVelocity[i])
-		transientForm.addInflowCondition(data.inflowSpatialFilters[i], inflowVelocity)
+	for i in range(1, Data.inflowCond):
+		wallBuilding = wallBuilding | Data.inflowSpatialFilters[i]
+		inflowVelocity = Function.vectorize(Data.inflowXVelocity[i], Data.inflowYVelocity[i])
+		transientForm.addInflowCondition(Data.inflowSpatialFilters[i], inflowVelocity)
 
-	for i in range(1, data.outflowCond):
-		transientForm.addOutflowCondition(data.outflowSpatialFilters[i])
-		wallBuilding = wallBuilding or data.outflowSpatialFilters[i]
+	for i in range(1, Data.outflowCond):
+		transientForm.addOutflowCondition(Data.outflowSpatialFilters[i])
+		wallBuilding = wallBuilding | Data.outflowSpatialFilters[i]
 
 	wall = SpatialFilter.negatedFilter(wallBuilding)
 	transientForm.addWallCondition(wall)
@@ -454,7 +440,7 @@ def solveStokesTransient():
 		transientForm.takeTimeStep()
 		print("Time step %i completed" % timeStepNumber)
 
-	return form
+	return transientForm
 
 
 
