@@ -49,6 +49,24 @@ class ParserTests(unittest.TestCase):
 	def testParseWithParen3(self):
 		func = ParserTests.parser.parse("(x+3)+3")
 		self.assertEqual(func.evaluate(2), 8)
+	def testParseDrRoberts3(self):
+		func = ParserTests.parser.parse("-3*y*y+9*y-6")
+		y = 3
+		self.assertEqual(func.evaluate(y), -3*y**2+9*y-6)
+		y = 4
+		self.assertEqual(func.evaluate(y), -3*y**2+9*y-6)
+	def testParseDrRoberts2(self):
+		func = ParserTests.parser.parse("3*(1-y)*(y-2)")
+		y = 3
+		self.assertEqual(func.evaluate(y), -3*y**2+9*y-6)
+		y = 4
+		self.assertEqual(func.evaluate(y), -3*y**2+9*y-6)
+	def testParseDrRoberts(self):
+		func = ParserTests.parser.parse("-3*y^2+9*y-6")
+		y = 3
+		self.assertEqual(func.evaluate(y), -3*y**2+9*y-6)
+		y = 4
+		self.assertEqual(func.evaluate(y), -3*y**2+9*y-6)
 	def testParseWithLots(self):
 		func = ParserTests.parser.parse("(x+3)*4/4+3*2^2")
 		self.assertEqual(func.evaluate(2), 17)
